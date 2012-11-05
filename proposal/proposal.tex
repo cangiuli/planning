@@ -19,6 +19,17 @@ semantics using linear logic.%
 \footnote{For example, in Pfenning, F.,
 \textit{Substructural Operational Semantics as Ordered Logic Programming}.
 (\url{http://dx.doi.org/10.1109/LICS.2009.8})}
+Traditionally, programming languages can be specified by abstract machines which
+transition between program states. SSOS encodes program states as sets or
+sequences of linear propositions, and abstract machine transitions in terms of
+linear implications which consume and produce those propositions.
+
+Then program executions correspond exactly to proofs in linear logic, so 
+
+
+if
+ill-formed states are unprovable, then we know a program to be safe.
+
 
 \begin{enumerate}
 \item linear logic proof search is planning
@@ -28,6 +39,13 @@ semantics using linear logic.%
 \end{enumerate}
 
 \section{Proposal}
+
+It has been observed many times that planning
+corresponds closely to linear logic proof search.
+
+
+operators which abstract over domains
+respect the frame rule
 
 \begin{enumerate}
 \item the problem
