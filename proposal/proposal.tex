@@ -11,7 +11,7 @@ Project Proposal}
 \begin{document}
 \maketitle
 
-\section{Summary}
+\section{Background}
 
 In programming language theory, \emph{substructural operational semantics}
 (SSOS) is a new technique for modularly specifying programming language
@@ -22,30 +22,45 @@ semantics using linear logic.%
 Traditionally, programming languages can be specified by abstract machines which
 transition between program states. SSOS encodes program states as sets or
 sequences of linear propositions, and abstract machine transitions in terms of
-linear implications which consume and produce those propositions.
-
-Then program executions correspond exactly to proofs in linear logic, so 
-
-
-if
-ill-formed states are unprovable, then we know a program to be safe.
-
-
-\begin{enumerate}
-\item linear logic proof search is planning
-\item essentially, using planning as model checking
-\item show safety of programs
-\item what's good about modularity?
-\end{enumerate}
+linear implications which consume and produce those propositions. Then program
+executions correspond exactly to proofs in linear logic, so safety of a program
+is equivalent to unprovability of all invalid states.
 
 \section{Proposal}
 
-It has been observed many times that planning
-corresponds closely to linear logic proof search.
+It has been observed many times that classical planning corresponds closely to
+linear logic proof search, since linear implications can be seen as STRIPS
+operators which delete their antecedents and add their consequents. The
+correspondence is, however, not perfect---crucially, STRIPS is not as amenable
+to parametrizing propositions over data types, a key component of SSOS (while
+conversely, linear logic does not easily express deletes which are not
+preconditions).
 
+Loosely, however, in planning terminology, SSOS interprets languages as planning
+domains, program states as planning states, and execution traces as plans; if a
+complete planner cannot plan for an invalid state, then a program is proven
+safe.
 
-operators which abstract over domains
-respect the frame rule
+Therefore, we intend to investigate expressing programming language semantics as
+planning domains, using an approach inspired by SSOS. We will formulate ways of
+encoding common programming language features (including sources of
+nondeterminism, such as shared memory concurrency and user input), and prove
+these encodings sound and complete with respect to the actual semantics.
+
+We will develop a toolchain for automatically converting language specifications
+into planning domains, and programs into initial states. We will then run
+various planners on these problems, and if necessary, modify our domain
+representations to attempt improving performance.
+
+The goal of our project will be to evaluate the extent to which classical
+planning can adequately express programming language semantics, and the extent
+to which planners can reason about the resulting domains. The former will be
+reflected by our ability to prove soundness and completeness of our encodings,
+and to build a general-purpose toolchain. The latter will be measured in the
+performance we are able to achieve on a variety of both safe and unsafe
+programs.
+
+\end{document}
 
 \begin{enumerate}
 \item the problem
@@ -53,5 +68,3 @@ respect the frame rule
 \item our approach
 \item evaluation
 \end{enumerate}
-
-\end{document}
