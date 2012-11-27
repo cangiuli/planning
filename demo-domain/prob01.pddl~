@@ -1,0 +1,8 @@
+(define (problem maths1)
+  (:domain maths)
+  (:objects Z)
+;;  (:init (eval (succ Z)) )
+    (:init (eval Z))
+    (:goal (exists (?x) (retn ?x)))
+;;  (:goal (retn (succ Z)) )
+)

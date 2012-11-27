@@ -2,3 +2,9 @@
 *.aux
 *.log
 *.pdf
+*.o
+*.output
+*.a
+*.tab.c
+lex.*.c
+sgplan

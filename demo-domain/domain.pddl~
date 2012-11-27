@@ -1,0 +1,12 @@
+(define (domain maths)
+  (:requirements :strips :existential-preconditions)
+  (:predicates (succ ?x)
+               (eval ?x)
+               (retn ?x))
+
+  (:action Evaluate
+      :parameters (?x)
+      :precondition (eval ?x)
+      :effect (retn ?x))
+
+)
