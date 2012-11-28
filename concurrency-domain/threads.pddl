@@ -22,22 +22,26 @@
 		; out:  for continuations (sometimes)
 		; and sometimes some arguments
 		(incr ?me ?next ?name - label) ; in-place increment
-		(load ?me ?next ?name ?name - label) ; "*temp = *x;"
-		(store ?me ?next ?addr ?name - label) ; "*x = *temp"
+		(load ?me ?next ?dest ?src - label) ; "dest <- src;", store is the same
 		(fork ?me ?next
 		          ?child1 ?child2 ; both must 'exit' before 'next' can run
 		          - label)
 		; 'join' is automatically created when Forking. Do not use directly.
 		(join ?child1 ?child2 ?next ?out - label)
 		(exit ?me - label)
+		; 'done' is automatically generated when Exiting. Do not use directly.
 		(done ?out - label)
-		(eval ?next ?out)
+		(eval ?next ?out - label) ; instruction pointer
 	)
 
-	; TODO: freshvar -> malloc; basically copy verbatim
+	(:action Malloc
+		:parameters (?x ?y - label)
+		:precondition (and (free ?x) (also ?x ?y))
+		:effect (and (not (free ?x)) (free ?y) (malloc ?x))
+	)
 
 	(:action Incr
-		:parameters (?me ?next ?name ?addr1 ?addr2 - label)
+		:parameters (?me ?out ?next ?name ?addr1 ?addr2 - label)
 		:precondition (and
 				(eval ?me ?out)
 				(incr ?me ?next ?name) ; x++
@@ -47,15 +51,31 @@
 		:effect (and
 				(not (malloc ?addr2))
 				(not (eval ?me ?out))
-				(eval ?next ?out) ; advance PC
+				(eval ?next ?out) ; advance IP
 				(not (ptr ?name ?addr1)) ; change what x points to...
 				(ptr ?name ?addr2) ; ...new "head"
 				(succ ?addr2 ?addr1) ; link
 			)
 	)
 
-	; TODO: load
-	; TODO: store
+	; Requires the thing to be initialised. To write a program that starts
+	; with uninitialised temporaries or whatever, start by pointing them
+	; to themselves.
+	(:action Load
+		:parameters (?me ?out ?next ?dest ?src ?addr ?oldaddr - label)
+		:precondition (and
+				(eval ?me ?out)
+				(load ?me ?next ?dest ?src)
+				(ptr ?src ?addr)
+				(ptr ?dest ?oldaddr)
+			)
+		:effect (and
+				(not (eval ?me ?out))
+				(eval ?next ?out)
+				(not (ptr ?dest ?oldaddr))
+				(ptr ?dest ?addr)
+			)
+	)
 
 	(:action Fork
 		:parameters (?me ?out ?next ?child1 ?child2 - label)
@@ -70,7 +90,7 @@
 				; I could use "?me" for the 'out' of both evals,
 				; but Join would then require "done ?me" twice...
 				(eval ?child1 ?child1)
-				(eval ?child2 ?child1)
+				(eval ?child2 ?child2)
 			)
 	)
 	(:action Join
@@ -80,15 +100,15 @@
 				(done ?child1)
 				(done ?child2)
 			)
-		:efect (and
+		:effect (and
 				(not (done ?child1)) ; these supplant the eval token
 				(not (done ?child2)) ; so we need to remove them
 				(eval ?next ?out)
 			)
 	)
 	(:action Exit
-		:parameters (?me - label)
+		:parameters (?me ?out - label)
 		:precondition (and (eval ?me ?out) (exit ?me))
-		:effect (and (not eval ?me ?out) (done ?out))
+		:effect (and (not (eval ?me ?out)) (done ?out))
 	)
 )
