@@ -1,4 +1,5 @@
-(define (problem threads0)
+; simplest possible program
+(define (problem threads-exit)
 	(:domain threads)
 	(:objects
 		out i0
@@ -7,7 +8,6 @@
 	(:init
 		; .text
 		(eval i0 out)
-		; parent joins and immediately exits
 		(exit i0)
 	)
 	(:goal (done out))

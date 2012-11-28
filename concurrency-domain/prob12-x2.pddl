@@ -1,4 +1,11 @@
-(define (problem threads1)
+; For x to be 2, the children must not interleave. Solution must contain e.g.:
+; LOAD c1
+; INCR c1
+; STORE c1
+; LOAD c2
+; INCR c2
+; STORE c2
+(define (problem threads-x2)
 	(:domain threads)
 	(:objects
 		addr_x x temp1 temp2
@@ -37,8 +44,8 @@
 	)
 	(:goal (and
 			(done out)
-			(exists (?a0 ?a1 - label)
-				(and (zero ?a0) (succ ?a1 ?a0) (ptr x ?a1)) ; x = 1
+			(exists (?a0 ?a1 ?a2 - label)
+				(and (zero ?a0) (succ ?a1 ?a0) (succ ?a2 ?a1) (ptr x ?a2)) ; x = 2
 			)
 		)
 	)

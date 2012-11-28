@@ -1,4 +1,5 @@
-(define (problem threads0)
+; simplest possible concurrent program
+(define (problem threads-forkjoin)
 	(:domain threads)
 	(:objects
 		out i0 i1
