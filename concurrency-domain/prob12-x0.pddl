@@ -1,3 +1,5 @@
+; This problem is impossible.
+;
 (define (problem threads1)
 	(:domain threads)
 	(:objects
@@ -37,8 +39,8 @@
 	)
 	(:goal (and
 			(done out)
-			(exists (?a0 ?a1 ?a2 - label)
-				(and (zero ?a0) (succ ?a1 ?a0) (succ ?a2 ?a1) (ptr x ?a2)) ; x = 2
+			(exists (?a0 - label)
+				(and (zero ?a0) (ptr x ?a0)) ; x = 2
 			)
 		)
 	)

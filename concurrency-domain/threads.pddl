@@ -58,16 +58,21 @@
 			)
 	)
 
+	; Requires the thing to be initialised. To write a program that starts
+	; with uninitialised temporaries or whatever, start by pointing them
+	; to themselves.
 	(:action Load
-		:parameters (?me ?out ?next ?dest ?src ?addr - label)
+		:parameters (?me ?out ?next ?dest ?src ?addr ?oldaddr - label)
 		:precondition (and
 				(eval ?me ?out)
 				(load ?me ?next ?dest ?src)
 				(ptr ?src ?addr)
+				(ptr ?dest ?oldaddr)
 			)
 		:effect (and
 				(not (eval ?me ?out))
 				(eval ?next ?out)
+				(not (ptr ?dest ?oldaddr))
 				(ptr ?dest ?addr)
 			)
 	)

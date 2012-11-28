@@ -10,9 +10,12 @@
 		- label
 	)
 	(:init
-		; .data (temp1 and temp2 are, of course, in .bss)
+		; .data
 		(zero addr_x)
 		(ptr x addr_x)
+		; .bss
+		(ptr temp1 temp1)
+		(ptr temp2 temp2)
 		; heap
 		(free m1) (also m1 m2) (also m2 m3)
 
