@@ -33,8 +33,6 @@
    (pred-s ?in ?out - label)
    )
 
-  (:functions (ctr))
-
   ;; Framework boilerplate
   (:action Finish
            :parameters (?answer - label)
