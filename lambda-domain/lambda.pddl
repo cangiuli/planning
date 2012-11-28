@@ -14,7 +14,6 @@
    (complete ?answer - label)
 
    ;; Substitution things
-   (allow-subst)
    (subst ?e1 ?x ?e2 ?e - label) ;; [e1/x]e2 = e
 ;;   (subst ?e1 ?x ?e2 ?out - label) ;; [e1/x]e2 = e
 ;;   (subst-retn ?e ?out - label)
@@ -90,7 +89,6 @@
   (:action Subst-Var-Eq
            :parameters (?e1 ?x ?e2 ?e - label)
            :precondition (and
-                          (allow-subst)
                           (var ?e2 ?x)
                           )
            :effect (subst ?e1 ?x ?e2 ?e1))
@@ -98,7 +96,6 @@
   (:action Subst-Var-Neq
            :parameters (?e1 ?x ?e2 ?e ?y - label)
            :precondition (and
-                          (allow-subst)
                           (var ?e2 ?y)
                           (not (= ?x ?y))
                           )
@@ -108,7 +105,6 @@
   (:action Subst-Lam-Eq
            :parameters (?e1 ?x ?e2 ?ebody ?e - label)
            :precondition (and
-                          (allow-subst)
                           (lam ?e2 ?x ?ebody)
                           )
            :effect (subst ?e1 ?x ?e2 ?e2))
@@ -117,7 +113,6 @@
   (:action Subst-Lam
            :parameters (?e1 ?x ?e2 ?y ?ebody ?ebody2 ?e - label)
            :precondition (and
-                          (allow-subst)
                           (lam ?e2 ?y ?ebody)
                           (not (= ?x ?y))
                           (subst ?e1 ?x ?ebody ?ebody2)

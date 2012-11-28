@@ -8,4 +8,4 @@ for I in `seq 0 $N`; do printf "l%d " $I; done; echo;
 
 echo
 
-for I in `seq 0 $(expr $N - 1)`; do printf "(la %d %d) " $I $(expr $I + 1); done; echo
+for I in `seq 0 $(expr $N - 1)`; do printf "(la l%d l%d) " $I $(expr $I + 1); done; echo

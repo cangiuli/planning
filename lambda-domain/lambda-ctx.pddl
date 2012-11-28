@@ -1,7 +1,3 @@
-;; This has succ and pred but represents them with labels for
-;; nicer output.
-
-
 
 (define (domain lambda)
   (:requirements :strips :adl :typing)
@@ -13,25 +9,21 @@
    (fresh ?x - label)
    (complete ?answer - label)
 
-   ;; Substitution things
-   (allow-subst)
-   (subst ?e1 ?x ?e2 ?e - label) ;; [e1/x]e2 = e
-;;   (subst ?e1 ?x ?e2 ?out - label) ;; [e1/x]e2 = e
-;;   (subst-retn ?e ?out - label)
-;;   (subst-cont ?k ?e ?out - label)
-
    ;; Stuff for the domain being represented
+   (binding ?var ?val ?res)
+
    (app ?l ?e1 ?e2 - label)
    (lam ?l ?var ?e - label)
    (var ?l ?var - label)
 
-   (eval ?e ?out - label)
+   (closure ?l ?var ?body ?ctx - label)
+
+   (eval ?ctx ?e ?out - label)
    (retn ?v ?out - label)
-   (cont-s ?in ?out - label)
-   (pred-s ?in ?out - label)
+   (cont-app1 ?in ?e2 ?out - label)
+   (cont-app2 ?in ?v2 ?out - label)
    )
 
-  (:functions (ctr))
 
   ;; Framework boilerplate
   (:action Finish
@@ -52,5 +44,17 @@
                     (fresh ?y)))
 
 ;;
+  (:action Eval-Lam
+           :parameters (?l ?var ?e ?ctx ?out ?clos - label)
+           :precondition (and
+                          (eval ?ctx ?l ?out)
+                          (lam ?l ?var ?e)
+                          (fresh ?clos)
+                          )
+           :effect (and
+                    (not (eval ?ctx ?l ?out))
+                    (not (fresh ?clos))
+                    (closure ?clos ?var ?e ?ctx)
+                    (retn ?clos ?out)))
 
   )
