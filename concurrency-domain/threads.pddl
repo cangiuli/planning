@@ -15,7 +15,10 @@
 		; out:  for continuations (sometimes)
 		; and sometimes some arguments
 		(incr ?me ?next ?name - label) ; in-place increment
+		(decr ?me ?next ?name - label) ; in-place decrement
 		(load ?me ?next ?dest ?src - label) ; "dest <- src;", store is the same
+        (branch ?me ?name ?iftrue ?iffalse - label)
+
 		(fork ?me ?next
 		          ?child1 ?child2 ; both must 'exit' before 'next' can run
 		          - label)
@@ -27,7 +30,36 @@
 		(eval ?next ?out - label) ; instruction pointer
 	)
 
-	(:action Incr
+	(:action BranchTrue
+		:parameters (?me ?out ?iftrue ?iffalse ?name - label ?val - number)
+		:precondition (and
+				(eval ?me ?out)
+				(branch ?me ?name ?iftrue ?iffalse) ; x++
+                ;; Anything that isn't 0.
+				(value ?name ?val)
+                (not (= ?val n0))
+			)
+		:effect (and
+				(not (eval ?me ?out))
+				(eval ?iftrue ?out) ; jump to true branch
+			)
+	)
+
+	(:action BranchFalse
+		:parameters (?me ?out ?iftrue ?iffalse ?name - label)
+		:precondition (and
+				(eval ?me ?out)
+				(branch ?me ?name ?iftrue ?iffalse) ; x++
+				(value ?name n0)
+			)
+		:effect (and
+				(not (eval ?me ?out))
+				(eval ?iffalse ?out) ; jump to false branch
+			)
+	)
+
+
+    (:action Incr
 		:parameters (?me ?out ?next ?name - label ?val1 ?val2 - number)
 		:precondition (and
 				(eval ?me ?out)
@@ -42,6 +74,23 @@
 				(value ?name ?val2) ; ...new "head"
 			)
 	)
+
+    (:action Decr
+		:parameters (?me ?out ?next ?name - label ?val1 ?val2 - number)
+		:precondition (and
+				(eval ?me ?out)
+				(decr ?me ?next ?name) ; x--
+				(value ?name ?val1)
+                (succ ?val2 ?val1)
+			)
+		:effect (and
+				(not (eval ?me ?out))
+				(eval ?next ?out) ; advance IP
+				(not (value ?name ?val1)) ; change what x points to...
+				(value ?name ?val2) ; ...new "head"
+			)
+	)
+
 
 	; Requires the thing to be initialised. To write a program that starts
 	; with uninitialised temporaries or whatever, start by pointing them
