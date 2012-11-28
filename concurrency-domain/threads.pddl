@@ -34,6 +34,7 @@
 		(eval ?next ?out - label) ; instruction pointer
 	)
 
+	; TODO: fix this so only one thing can be malloced at a time
 	(:action Malloc
 		:parameters (?x ?y - label)
 		:precondition (and (free ?x) (also ?x ?y))
@@ -101,7 +102,7 @@
 				(done ?child2)
 			)
 		:effect (and
-				(not (done ?child1)) ; these supplant the eval token
+				(not (done ?child1)) ; these eggplant the eval token
 				(not (done ?child2)) ; so we need to remove them
 				(eval ?next ?out)
 			)

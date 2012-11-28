@@ -1,11 +1,5 @@
-; For x to be 1, the children must interleave. Solution must contain e.g.:
-; LOAD c1
-; LOAD c2
-; INCR c1
-; INCR c2
-; STORE c1
-; STORE c2
-(define (problem threads-x1)
+; Impossible for x to be 3.
+(define (problem threads-x3)
 	(:domain threads)
 	(:objects
 		addr_x x temp1 temp2
@@ -13,7 +7,7 @@
 		c1i0 c1i1 c1i2 c1i3
 		c2i0 c2i1 c2i2 c2i3
 		; will need to malloc twice
-		m1 m2 m3
+		m1 m2 m3 m4
 		- label
 	)
 	(:init
@@ -24,7 +18,7 @@
 		(ptr temp1 temp1)
 		(ptr temp2 temp2)
 		; heap
-		(free m1) (also m1 m2) (also m2 m3)
+		(free m1) (also m1 m2) (also m2 m3) (also m3 m4)
 
 		; .text
 		(eval i0 out)
@@ -44,10 +38,10 @@
 	)
 	(:goal (and
 			(done out)
-			(zero addr_x) (succ m1 addr_x) (ptr x m1) ; x = 1
-			; (exists (?a0 ?a1 - label)
-			; 	(and (zero ?a0) (succ ?a1 ?a0) (ptr x ?a1)) ; x = 1
-			; )
+			(zero addr_x)
+			(exists (?a1 ?a2 ?a3 - label)
+				(and (succ ?a1 addr_x) (succ ?a2 ?a1) (succ ?a3 ?a2) (ptr x ?a3)) ; x = 3
+			)
 		)
 	)
 )

@@ -39,9 +39,8 @@
 	)
 	(:goal (and
 			(done out)
-			(exists (?a0 - label)
-				(and (zero ?a0) (ptr x ?a0)) ; x = 2
-			)
+			(zero addr_x)
+			(ptr x addr_x) ; x = 0
 		)
 	)
 )

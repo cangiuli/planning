@@ -44,9 +44,10 @@
 	)
 	(:goal (and
 			(done out)
-			(exists (?a0 ?a1 ?a2 - label)
-				(and (zero ?a0) (succ ?a1 ?a0) (succ ?a2 ?a1) (ptr x ?a2)) ; x = 2
-			)
+			(zero addr_x) (succ m1 addr_x) (succ m2 m1) (ptr x m2) ; x = 2
+			; (exists (?a0 ?a1 ?a2 - label)
+			; 	(and (zero ?a0) (succ ?a1 ?a0) (succ ?a2 ?a1) (ptr x ?a2)) ; x = 2
+			; )
 		)
 	)
 )
