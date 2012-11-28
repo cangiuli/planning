@@ -34,10 +34,9 @@
 	)
 	(:goal (and
 			(done out)
-			(exists (?a0 - label)
-			(exists (?a1 - label)
-				(and (zero ?a0) (suc ?a1 ?a0) (ptr x ?a1)) ; x = 1
-			))
+			(exists (?a0 ?a1 - label)
+				(and (zero ?a0) (succ ?a1 ?a0) (ptr x ?a1)) ; x = 1
+			)
 		)
 	)
 )

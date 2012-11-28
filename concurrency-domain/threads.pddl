@@ -31,7 +31,7 @@
 		(exit ?me - label)
 		; 'done' is automatically generated when Exiting. Do not use directly.
 		(done ?out - label)
-		(eval ?next ?out) ; instruction pointer
+		(eval ?next ?out - label) ; instruction pointer
 	)
 
 	(:action Malloc
@@ -41,7 +41,7 @@
 	)
 
 	(:action Incr
-		:parameters (?me ?next ?name ?addr1 ?addr2 - label)
+		:parameters (?me ?out ?next ?name ?addr1 ?addr2 - label)
 		:precondition (and
 				(eval ?me ?out)
 				(incr ?me ?next ?name) ; x++
@@ -95,15 +95,15 @@
 				(done ?child1)
 				(done ?child2)
 			)
-		:efect (and
+		:effect (and
 				(not (done ?child1)) ; these supplant the eval token
 				(not (done ?child2)) ; so we need to remove them
 				(eval ?next ?out)
 			)
 	)
 	(:action Exit
-		:parameters (?me - label)
+		:parameters (?me ?out - label)
 		:precondition (and (eval ?me ?out) (exit ?me))
-		:effect (and (not eval ?me ?out) (done ?out))
+		:effect (and (not (eval ?me ?out)) (done ?out))
 	)
 )
