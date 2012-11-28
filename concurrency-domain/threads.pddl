@@ -85,7 +85,7 @@
 				; I could use "?me" for the 'out' of both evals,
 				; but Join would then require "done ?me" twice...
 				(eval ?child1 ?child1)
-				(eval ?child2 ?child1)
+				(eval ?child2 ?child2)
 			)
 	)
 	(:action Join
