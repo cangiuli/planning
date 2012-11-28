@@ -3,18 +3,11 @@
 
 (define (domain threads)
 	(:requirements :strips :adl :typing)
-	(:types label)
+	(:types label number)
 	(:predicates
-		; memory management
-		(malloc ?x - label) ; (fresh)
-		(free ?x - label) ; x is a memory slot that can be alloced (fresh-ctr)
-		(also ?x ?y - label) ; y is also free mem; but allocate x first (la)
-
 		; data
-		; Alternate interpretation: "zero" is NULL, "succ" redundant to "ptr"
-		(zero ?addr - label)      ; addr's value is 0
-		(succ ?addr ?n - label)   ; addr's value is 1 higher than n
-		(ptr ?name ?addr - label) ; variable "name" points to memory "addr"
+		(value ?name - label ?value - number) ; assignable "name" holds "value"
+        (succ ?n ?m) ; n+1 = m
 
 		; instructions -- each instruction has
 		; me:   the address of this instruction
@@ -34,28 +27,19 @@
 		(eval ?next ?out - label) ; instruction pointer
 	)
 
-	; TODO: fix this so only one thing can be malloced at a time
-	(:action Malloc
-		:parameters (?x ?y - label)
-		:precondition (and (free ?x) (also ?x ?y))
-		:effect (and (not (free ?x)) (free ?y) (malloc ?x))
-	)
-
 	(:action Incr
-		:parameters (?me ?out ?next ?name ?addr1 ?addr2 - label)
+		:parameters (?me ?out ?next ?name - label ?val1 ?val2 - number)
 		:precondition (and
 				(eval ?me ?out)
 				(incr ?me ?next ?name) ; x++
-				(ptr ?name ?addr1)
-				(malloc ?addr2)
+				(value ?name ?val1)
+                (succ ?val1 ?val2)
 			)
 		:effect (and
-				(not (malloc ?addr2))
 				(not (eval ?me ?out))
 				(eval ?next ?out) ; advance IP
-				(not (ptr ?name ?addr1)) ; change what x points to...
-				(ptr ?name ?addr2) ; ...new "head"
-				(succ ?addr2 ?addr1) ; link
+				(not (value ?name ?val1)) ; change what x points to...
+				(value ?name ?val2) ; ...new "head"
 			)
 	)
 
@@ -63,18 +47,18 @@
 	; with uninitialised temporaries or whatever, start by pointing them
 	; to themselves.
 	(:action Load
-		:parameters (?me ?out ?next ?dest ?src ?addr ?oldaddr - label)
+		:parameters (?me ?out ?next ?dest ?src - label ?val ?oldval - number)
 		:precondition (and
 				(eval ?me ?out)
 				(load ?me ?next ?dest ?src)
-				(ptr ?src ?addr)
-				(ptr ?dest ?oldaddr)
+				(value ?src ?val)
+				(value ?dest ?oldval)
 			)
 		:effect (and
 				(not (eval ?me ?out))
 				(eval ?next ?out)
-				(not (ptr ?dest ?oldaddr))
-				(ptr ?dest ?addr)
+				(not (value ?dest ?oldval))
+				(value ?dest ?val)
 			)
 	)
 

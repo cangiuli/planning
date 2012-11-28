@@ -2,23 +2,21 @@
 (define (problem threads-x3)
 	(:domain threads)
 	(:objects
-		addr_x x temp1 temp2
+        n0 n1 n2 n3 - number
+
+        addr_x x temp1 temp2
 		out i0 i1
 		c1i0 c1i1 c1i2 c1i3
 		c2i0 c2i1 c2i2 c2i3
-		; will need to malloc twice
-		m1 m2 m3 m4
 		- label
 	)
 	(:init
+        (succ n0 n1) (succ n1 n2) (succ n2 n3)
+
 		; .data
-		(zero addr_x)
-		(ptr x addr_x)
-		; .bss
-		(ptr temp1 temp1)
-		(ptr temp2 temp2)
-		; heap
-		(free m1) (also m1 m2) (also m2 m3) (also m3 m4)
+		(value x n0)
+		(value temp1 n0)
+		(value temp2 n0)
 
 		; .text
 		(eval i0 out)
@@ -38,10 +36,7 @@
 	)
 	(:goal (and
 			(done out)
-			(zero addr_x)
-			(exists (?a1 ?a2 ?a3 - label)
-				(and (succ ?a1 addr_x) (succ ?a2 ?a1) (succ ?a3 ?a2) (ptr x ?a3)) ; x = 3
-			)
+            (value x n3) ; x = 2
 		)
 	)
 )
