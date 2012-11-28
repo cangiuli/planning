@@ -22,19 +22,23 @@
 		; out:  for continuations (sometimes)
 		; and sometimes some arguments
 		(incr ?me ?next ?name - label) ; in-place increment
-		(load ?me ?next ?name ?name - label) ; "*temp = *x;"
-		(store ?me ?next ?addr ?name - label) ; "*x = *temp"
+		(load ?me ?next ?dest ?src - label) ; "dest <- src;", store is the same
 		(fork ?me ?next
 		          ?child1 ?child2 ; both must 'exit' before 'next' can run
 		          - label)
 		; 'join' is automatically created when Forking. Do not use directly.
 		(join ?child1 ?child2 ?next ?out - label)
 		(exit ?me - label)
+		; 'done' is automatically generated when Exiting. Do not use directly.
 		(done ?out - label)
-		(eval ?next ?out)
+		(eval ?next ?out) ; instruction pointer
 	)
 
-	; TODO: freshvar -> malloc; basically copy verbatim
+	(:action Malloc
+		:parameters (?x ?y - label)
+		:precondition (and (free ?x) (also ?x ?y))
+		:effect (and (not (free ?x)) (free ?y) (malloc ?x))
+	)
 
 	(:action Incr
 		:parameters (?me ?next ?name ?addr1 ?addr2 - label)
@@ -47,15 +51,26 @@
 		:effect (and
 				(not (malloc ?addr2))
 				(not (eval ?me ?out))
-				(eval ?next ?out) ; advance PC
+				(eval ?next ?out) ; advance IP
 				(not (ptr ?name ?addr1)) ; change what x points to...
 				(ptr ?name ?addr2) ; ...new "head"
 				(succ ?addr2 ?addr1) ; link
 			)
 	)
 
-	; TODO: load
-	; TODO: store
+	(:action Load
+		:parameters (?me ?out ?next ?dest ?src ?addr - label)
+		:precondition (and
+				(eval ?me ?out)
+				(load ?me ?next ?dest ?src)
+				(ptr ?src ?addr)
+			)
+		:effect (and
+				(not (eval ?me ?out))
+				(eval ?next ?out)
+				(ptr ?dest ?addr)
+			)
+	)
 
 	(:action Fork
 		:parameters (?me ?out ?next ?child1 ?child2 - label)
