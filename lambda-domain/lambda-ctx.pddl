@@ -1,9 +1,11 @@
 
 (define (domain lambda)
   (:requirements :strips :adl :typing :derived-predicates)
-  (:types label)
+  (:types  label address)
   (:predicates
+
    ;; Framework boilerplate
+
    (la ?x ?y - label)
    (fresh-ctr ?x - label)
    (fresh ?x - label)
@@ -11,6 +13,7 @@
    (aa ?x ?y - address)
    (addr-fresh-ctr ?x - address)
    (addr-fresh ?x - address)
+
 
 
    (complete ?answer - address)
@@ -62,11 +65,12 @@
                     (fresh-ctr ?y)
                     (fresh ?y)))
   (:action FreshAddress
-           :parameters (?x ?y - addressh)
+           :parameters (?x ?y - address)
            :precondition (and
                           (addr-fresh-ctr ?x)
                           (not (addr-fresh ?x))
-                          (aa ?x ?y))
+                          (aa ?x ?y)
+                          )
 
            :effect (and
                     (not (addr-fresh-ctr ?x))
