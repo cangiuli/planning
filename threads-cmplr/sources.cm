@@ -5,6 +5,8 @@ Group is
         $/ml-yacc-lib.cm
 
         language.sml
+        compiler.sml
+        util.sml
 
         parser/lang.lex.sml
         parser/lang.grm.sig
