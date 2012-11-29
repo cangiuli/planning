@@ -27,5 +27,5 @@ thread1() {
 }
 
 main() {
-	fork(thread1, thread2);
+	fork(thread0, thread1);
 }

@@ -79,7 +79,7 @@ struct
           end
   in
   (* Convert a labeled register machine program into a stock one *)
-  fun convert code =
+  fun convertFunction code =
       let
           val (map, code) = strip_labels code
           fun lookup _ (S.TLabel l) =
@@ -97,6 +97,11 @@ struct
           Util.mapi patch code
       end
   end
+
+  fun convert (globals, functions) =
+      (globals,
+       map (fn (name, body) => (name, convertFunction body)) functions)
+
 end
 
 
@@ -143,15 +148,7 @@ struct
          | S.SFork (t1, t2) => oper (D.OFork (t1, t2))
          | S.SSeq (s1, s2) => compileStm D.TNext s1 @ compileStm next s2
 
-         (* Constant control flow functions *)
-(*
-         | S.SIf (S.ENum 0, _, s2) => compileStm next s2
-         | S.SIf (S.ENum _, s1, _) => compileStm next s1
-         | S.SWhile (S.ENum 0, _) => compileStm next S.SNil
-         | S.SWhile (S.ENum _, body) =>
-           let val l = L.newlabel "infinite loop branch"
-           in D.ILabel l :: compileStm (D.TLabel l) body end
-*)
+         (* Control flow *)
          | S.SIf (e, s1, s2) =>
            let val (exit, exit_code) = handleExit next
                val branch_code = handleBranch
@@ -179,6 +176,8 @@ struct
   fun compileFunction (name, stm) =
       let val exit = L.newlabel "function exit"
           val code = compileStm (D.TLabel exit) stm
-      in code @ [D.ILabel exit, D.IExit] end
+      in (name, code @ [D.ILabel exit, D.IExit]) end
+
+  fun compile (globals, functions) = (globals, map compileFunction functions)
 
 end
