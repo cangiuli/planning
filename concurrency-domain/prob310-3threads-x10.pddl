@@ -2,12 +2,11 @@
 ; threads. The goal is to see whether with T threads looping N times, do answers
 ; range from 2 to N*T? or from T to N*T?
 ;
-; This variant of the problem (with the goal being for x to be 2) is impossible.
-; This tells us the solution is T to N*T.
-(define (problem threads-3threads-x2)
+; This variant of the problem (with the goal being for x to be 10) is impossible.
+(define (problem threads-3threads-x9)
 	(:domain threads)
 	(:objects
-	n0 n1 n2 n3 n4 n5 n6 n7 n8 n9 n10 - number
+	n11 n0 n1 n2 n3 n4 n5 n6 n7 n8 n9 n10 - number
 
 		addr_x x temp1 temp2 temp3
 		out i0 i1
@@ -21,7 +20,7 @@
 	(succ n0 n1) (succ n1 n2) (succ n2 n3)
 	(succ n3 n4) (succ n4 n5) (succ n5 n6)
 	(succ n6 n7) (succ n7 n8) (succ n8 n9)
-	(succ n9 n10)
+	(succ n9 n10) (succ n10 n11)
 
 		; .data
 	(value x n0)
@@ -73,7 +72,7 @@
 	)
 	(:goal (and
 			(done out)
-			(value x n2) ; x = 2
+			(value x n10) ; x = 9
 		)
 	)
 )
