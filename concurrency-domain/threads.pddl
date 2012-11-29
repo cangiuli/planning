@@ -17,6 +17,7 @@
 		(incr ?me ?next ?name - label) ; in-place increment
 		(decr ?me ?next ?name - label) ; in-place decrement
 		(load ?me ?next ?dest ?src - label) ; "dest <- src;", store is the same
+		(set ?me ?next ?dest - label ?n - number) ; "dest <- n;"
         (branch ?me ?name ?iftrue ?iffalse - label)
 
 		(fork ?me ?next
@@ -92,9 +93,7 @@
 	)
 
 
-	; Requires the thing to be initialised. To write a program that starts
-	; with uninitialised temporaries or whatever, start by pointing them
-	; to themselves.
+	; Requires the thing to be initialised.
 	(:action Load
 		:parameters (?me ?out ?next ?dest ?src - label ?val ?oldval - number)
 		:precondition (and
@@ -110,6 +109,22 @@
 				(value ?dest ?val)
 			)
 	)
+
+	(:action Set
+		:parameters (?me ?out ?next ?dest - label ?val ?oldval - number)
+		:precondition (and
+				(eval ?me ?out)
+				(set ?me ?next ?dest ?val)
+				(value ?dest ?oldval)
+			)
+		:effect (and
+				(not (eval ?me ?out))
+				(eval ?next ?out)
+				(not (value ?dest ?oldval))
+				(value ?dest ?val)
+			)
+	)
+
 
 	(:action Fork
 		:parameters (?me ?out ?next ?child1 ?child2 - label)
