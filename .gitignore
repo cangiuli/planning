@@ -9,3 +9,4 @@
 lex.*.c
 sgplan
 *~
+.cm/

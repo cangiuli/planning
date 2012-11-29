@@ -1,0 +1,15 @@
+int x = 0; int temp1 = 0; int temp2 = 0;
+
+thread1() {
+	temp1 = x; temp1++; x = temp1;
+	temp1 = x; temp1++; x = temp1;
+}
+
+thread2() {
+	temp2 = x; temp2++; x = temp2;
+	temp2 = x; temp2++; x = temp2;
+}
+
+main() {
+	fork(thread1, thread2);
+}

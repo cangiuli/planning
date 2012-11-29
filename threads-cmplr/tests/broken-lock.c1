@@ -1,0 +1,31 @@
+/* this lock lacks mutual exclusion */
+int locked = 0;
+int num_in_section = 0;
+
+thread0() {
+	while (locked) {
+	}
+	locked = 1;
+
+	/* critical section */
+	num_in_section++;
+	num_in_section--;
+
+    locked = 1;
+}
+
+thread1() {
+	while (locked) {
+	}
+	locked = 1;
+
+	/* critical section */
+	num_in_section++;
+	num_in_section--;
+
+    locked = 0;
+}
+
+main() {
+	fork(thread1, thread2);
+}

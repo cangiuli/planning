@@ -1,0 +1,67 @@
+structure L = C1Named
+exception Parse of string
+
+%%
+
+%term EOF | IDENT of string | NUMBER of int
+ | INC | DEC | IF | ELSE | WHILE | FORK | INT
+ | LBRACE | RBRACE | LPAREN | RPAREN | EQUALS | SEMI | COMMA | BANG
+
+%nonterm
+   start of L.program
+ | program of L.program
+ | globals of L.global list
+ | functions of L.function list
+ | fdef of L.function
+ | block of L.stm
+ | stms of L.stm
+ | stm of L.stm
+ | elsestm of L.stm
+ | exp of L.exp
+
+%verbose
+%pos int
+%start start
+%eop EOF
+%noshift EOF
+%name C1
+%%
+
+start   : program                (program)
+
+program : globals functions      (globals, functions)
+
+(* You need to have at least one global. *)
+globals :                        ([])
+        | INT IDENT EQUALS NUMBER SEMI globals
+                                 ((IDENT, NUMBER) :: globals)
+
+functions :                      ([])
+          | fdef functions       (fdef :: functions)
+
+fdef    : IDENT LPAREN RPAREN block (IDENT, block)
+
+block   : LBRACE stms RBRACE     (stms)
+
+stms    :                        (L.SNil)
+        | stm stms               (case stms of
+                                      L.SNil => stm
+                                    | _ => L.SSeq (stm, stms))
+
+stm     : SEMI                   (L.SNil)
+        | IDENT EQUALS exp SEMI  (L.SAssign (IDENT, exp))
+        | IF LPAREN exp RPAREN stm elsestm (L.SIf (exp, stm, elsestm))
+        | WHILE LPAREN exp RPAREN stm (L.SWhile (exp, stm))
+        | block                  (block)
+
+        | IDENT INC SEMI         (L.SInc IDENT)
+        | IDENT DEC SEMI         (L.SDec IDENT)
+        | FORK LPAREN IDENT COMMA IDENT RPAREN SEMI
+                                 (L.SFork (IDENT1, IDENT2))
+
+elsestm :                        (L.SNil)
+        | ELSE stm               (stm)
+
+exp     : IDENT               (L.EVar IDENT)
+        | NUMBER              (L.ENum NUMBER)
+        | BANG IDENT          (L.ENot IDENT)

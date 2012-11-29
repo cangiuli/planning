@@ -1,0 +1,47 @@
+int flag0 = 0; int flag1 = 0; int turn = 0;
+int num_in_section = 0;
+
+thread0() {
+	flag0 = 1;
+	while (flag1) {
+		if (turn) { /* turn != 0 */
+			flag0 = 0;
+			while (turn) { /* turn != 0 */
+				/* busy wait */
+			}
+			flag0 = 1;
+		}
+	}
+
+	/* critical section */
+	num_in_section++;
+	num_in_section--;
+
+
+	turn = 1;
+	flag0 = 0;
+}
+
+thread1() {
+	flag1 = 1;
+	while (flag0) {
+		if (!turn) { /* turn != 1 */
+			flag1 = 0;
+			while (!turn) { /* turn != 1 */
+				/* busy wait */
+			}
+			flag1 = 1;
+		}
+	}
+
+	/* critical section */
+	num_in_section++;
+	num_in_section--;
+
+	turn = 0;
+	flag1 = 0;
+}
+
+main() {
+	fork(thread1, thread2);
+}
