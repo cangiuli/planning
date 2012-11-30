@@ -255,7 +255,7 @@
 #define dis_MAX_FUNCTIONS 65536
 #define dis_MAX_TYPES 256
 #define dis_MAX_ARITY 8
-#define dis_MAX_VARS 9
+#define dis_MAX_VARS 12
 
 
 #define dis_MAX_TYPE 2000
