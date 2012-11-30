@@ -1,193 +1,190 @@
 ;; SKI combinator calculus
 
 (define (domain ski)
-  (:requirements :strips :adl)
+  (:requirements :strips :adl :typing)
+  (:types dest ptr)
   (:predicates
-   ;; Domain
-   (s ?l)
-   (k ?l)
-   (i ?l)
-   (app ?l ?e1 ?e2)
+    ;; Destinations
 
-   ;; Machine
-   (eval ?l ?e ?k)
-   (cont ?l ?e ?k)
-   (retn ?l ?e ?k)
-   )
+    ;; Pointers
 
-  ;; Rules:
-  ;; (app I X) -> X
-  ;; (app (app K X) Y) -> X
-  ;; (app (app (app S X) Y) Z) -> (app (app X Z) (app Y Z))
-  ;;
-  ;; Abstract machine:
-  ;; (eval (app X Y)) -> (eval X) * (cont Y)
-  ;; (eval I) -> (retn I)
-  ;; (eval K) -> (retn K)
-  ;; (eval S) -> (retn S)
-  ;; (retn I) * (cont X) -> (retn X)
-  ;; (retn K) * (cont X) -> (retn (app K X))
-  ;; (retn (app K X)) * (cont Y) -> (retn X)
-  ;; (retn S) * (cont X) -> (retn (app S X))
-  ;; (retn (app S X)) * (cont Y) -> (retn (app (app S X) Y))
-  ;; (retn (app (app S X) Y)) * (cont Z) -> (retn (app (app X Z) (app Y Z)))
-  ;;
-  ;; Example:
-  ;; (eval (app (app K X) Y))
-  ;; -> (eval (app K X))
-  ;;    (cont Y)
-  ;; -> (eval K)
-  ;;    (cont X)
-  ;;    (cont Y)
-  ;; -> (retn K)
-  ;;    (cont X)
-  ;;    (cont Y)
-  ;; -> (retn (app K X))
-  ;;    (cont Y)
-  ;; -> (retn X)
+    ;; Expressions/continuations
+    (S ?e - ptr)
+    (K ?e - ptr)
+    (I ?e - ptr)
+    (S1 ?e ?ex - ptr)
+    (S2 ?e ?ex ?ey - ptr)
+    (K1 ?e ?ex - ptr)
+    (App ?e ?ex ?ey)
 
-  ;; Stuff for the domain being represented
+    ;; Machine frames
+    (eval ?l ?e ?l')
+    (cont ?l ?e ?l')
+    (retn ?l ?e ?l'))
 
-  ;; (eval (app X Y)) -> (eval X) * (cont Y)
+  ;; Eval rules
+
   (:action Eval-App
-           :parameters (?l ?e1 ?e2 ?k ?e)
-           :precondition (and
-                          (eval ?l ?e ?k)
-                          (app ?e ?e1 ?e2))
-           :effect (and
-                    (not (eval ?l ?e ?k))
-                    (eval ?l ?e1 ?e)
-                    (cont ?e ?e2 ?k)))
+    :parameters ()
+    :precondition (and
+      (eval ?l ?e ?l')
+      (App ?e ?ex ?ey)
+      (dest-next ?l'')
+      (dest-succ ?l'' ?lnext))
+    :effect (and
+      (not (eval ?l ?e ?l'))
+      (eval ?l ?ex ?l'')
+      (cont ?l'' ?ey ?l')
+      (not (dest-next ?l''))
+      (dest-next ?lnext)))
 
-  ;; (eval I) -> (retn I)
-  (:action Eval-I
-           :parameters (?l ?e ?k)
-           :precondition (and
-                          (eval ?l ?e ?k)
-                          (i ?e))
-           :effect (and
-                    (not (eval ?l ?e ?k))
-                    (retn ?l ?e ?k)))
-
-  ;; (eval K) -> (retn K)
-  (:action Eval-K
-           :parameters (?l ?e ?k)
-           :precondition (and
-                          (eval ?l ?e ?k)
-                          (k ?e))
-           :effect (and
-                    (not (eval ?l ?e ?k))
-                    (retn ?l ?e ?k)))
-
-  ;; (eval S) -> (retn S)
   (:action Eval-S
-           :parameters (?l ?e ?k)
-           :precondition (and
-                          (eval ?l ?e ?k)
-                          (s ?e))
-           :effect (and
-                    (not (eval ?l ?e ?k))
-                    (retn ?l ?e ?k)))
+    :parameters ()
+    :precondition (and
+      (eval ?l ?e ?l')
+      (S ?e))
+    :effect (and
+      (not (eval ?l ?e ?l'))
+      (retn ?l ?e ?l')))
 
-  ;; (retn I) * (cont X) -> (retn X)
+  (:action Eval-K
+    :parameters ()
+    :precondition (and
+      (eval ?l ?e ?l')
+      (K ?e))
+    :effect (and
+      (not (eval ?l ?e ?l'))
+      (retn ?l ?e ?l')))
+
+  (:action Eval-I
+    :parameters ()
+    :precondition (and
+      (eval ?l ?e ?l')
+      (I ?e))
+    :effect (and
+      (not (eval ?l ?e ?l'))
+      (retn ?l ?e ?l')))
+
+  (:action Eval-S1
+    :parameters ()
+    :precondition (and
+      (eval ?l ?e ?l')
+      (S1 ?e ?ex))
+    :effect (and
+      (not (eval ?l ?e ?l'))
+      (retn ?l ?e ?l')))
+
+  (:action Eval-S2
+    :parameters ()
+    :precondition (and
+      (eval ?l ?e ?l')
+      (S2 ?e ?ex ?ey))
+    :effect (and
+      (not (eval ?l ?e ?l'))
+      (retn ?l ?e ?l')))
+
+  (:action Eval-K1
+    :parameters ()
+    :precondition (and
+      (eval ?l ?e ?l')
+      (K1 ?e ?ex))
+    :effect (and
+      (not (eval ?l ?e ?l'))
+      (retn ?l ?e ?l')))
+
+  ;; Retn rules (yielding Eval)
+
   (:action Retn-I
-           :parameters (?l ?e1 ?k ?e2 ?k2 ?e)
-           :precondition (and
-                          (retn ?l ?e1 ?k)
-                          (i ?e1)
-                          (cont ?k ?e2 ?k2))
-           :effect (and
-                    (not (retn ?l ?e1 ?k))
-                    (not (cont ?k ?e2 ?k2))
-                    (retn ?l ?e2 ?k2)))
+    :parameters ()
+    :precondition (and
+      (retn ?l ?e ?l')
+      (cont ?l' ?ec ?l'')
+      (I ?e))
+    :effect (and
+      (not (retn ?l ?e ?l'))
+      (not (cont ?l' ?ec ?l''))
+      (eval ?l ?ec ?l'')))
 
-
-  ;; (retn K) * (cont X) -> (retn (app K X))
   (:action Retn-K1
-           :parameters (?l ?e1 ?k ?e2 ?k2 ?e)
-           :precondition (and
-                          (retn ?l ?e1 ?k)
-                          (k ?e1)
-                          (cont ?k ?e2 ?k2))
-           :effect (and
-                    (not (retn ?l ?e1 ?k))
-                    (not (cont ?k ?e2 ?k2))
-                    (retn ?l ?e ?k2)
-                    (app ?k ?e1 ?e2)))
+    :parameters ()
+    :precondition (and
+      (retn ?l ?e ?l')
+      (cont ?l' ?ec ?l'')
+      (K1 ?e ?ex))
+    :effect (and
+      (not (retn ?l ?e ?l'))
+      (not (cont ?l' ?ec ?l''))
+      (eval ?l ?e ?l'')))
 
-  ;; (retn K) * (cont X) -> (retn (app K X))
-  (:action Retn-K1
-           :parameters (?l ?e1 ?k ?e2 ?k2 ?e)
-           :precondition (and
-                          (retn ?l ?e1 ?k)
-                          (k ?e1)
-                          (cont ?k ?e2 ?k2))
-           :effect (and
-                    (not (retn ?l ?e1 ?k))
-                    (not (cont ?k ?e2 ?k2))
-                    (retn ?l ?e ?k2)
-                    (app ?k ?e1 ?e2)))
-
-  ;; (retn (app K X)) * (cont Y) -> (retn X)
-  (:action Retn-K2
-           :parameters (?l ?e1 ?k ?e2 ?e3 ?e4 ?k2)
-           :precondition (and
-                          (retn ?l ?e1 ?k)
-                          (app ?e1 ?e2 ?e3)
-                          (k ?e2)
-                          (cont ?k ?e4 ?k2))
-           :effect (and
-                    (not (retn ?l ?e1 ?k))
-                    (not (app ?e1 ?e2 ?e3))
-                    (not (k ?e2))
-                    (not (cont ?k ?e4 ?k2))
-                    (retn ?l ?e3 ?k2)))
-
-  ;; (retn S) * (cont X) -> (retn (app S X))
-  (:action Retn-S1
-           :parameters (?l ?e1 ?k ?e2 ?k2)
-           :precondition (and
-                          (retn ?l ?e1 ?k)
-                          (s ?e1)
-                          (cont ?k ?e2 ?k2))
-           :effect (and
-                    (not (retn ?l ?e1 ?k))
-                    (not (cont ?k ?e2 ?k2))
-                    (retn ?l ?k ?k2)
-                    (app ?k ?e1 ?e2)))
-
-  ;; (retn (app S X)) * (cont Y) -> (retn (app (app S X) Y))
   (:action Retn-S2
-           :parameters (?l ?e1 ?k ?e2 ?e3 ?e4 ?k2)
-           :precondition (and
-                          (retn ?l ?e1 ?k)
-                          (app ?e1 ?e2 ?e3)
-                          (s ?e2)
-                          (cont ?k ?e4 ?k2))
-           :effect (and
-                    (not (retn ?l ?e1 ?k))
-                    (not (cont ?k ?e4 ?k2))
-                    (retn ?l ?k ?k2)
-                    (app ?k ?e1 ?e4)))
+    :parameters ()
+    :precondition (and
+      (retn ?l ?e ?l')
+      (cont ?l' ?ec ?l'')
+      (S2 ?e ?ex ?ey)
+      (ptr-next ?e')
+      (ptr-succ ?e' ?e1)
+      (ptr-succ ?e1 ?e2)
+      (ptr-succ ?e2 ?enext))
+    :effect (and
+      (not (retn ?l ?e ?l'))
+      (not (cont ?l' ?ec ?l''))
+      (eval ?l ?e' ?l'')
+      (App ?e' ?e1' ?e2')
+      (App ?e1' ?ex ?ec)
+      (App ?e2' ?ey ?ec)
+      (not (ptr-next ?e'))
+      (ptr-next ?enext)))
 
-  ;; (retn (app (app S X) Y)) * (cont Z) -> (retn (app (app X Z) (app Y Z)))
-  (:action Retn-S3
-           :parameters (?l ?e1 ?k ?e2 ?ey ?e3 ?ex ?ez ?k2)
-           :precondition (and
-                          (retn ?l ?e1 ?k)
-                          (app ?e1 ?e2 ?ey)
-                          (app ?e2 ?e3 ?ex)
-                          (s ?e3)
-                          (cont ?k ?ez ?k2))
-           :effect (and
-                    (not (retn ?l ?e1 ?k))
-                    (not (app ?e1 ?e2 ?ey))
-                    (not (app ?e2 ?e3 ?ex))
-                    (not (s ?e3))
-                    (retn ?l ?e1 ?k2)
-                    (app ?e1 ?e2 ?e3)
-                    (app ?e2 ?ex ?ez)
-                    (app ?e3 ?ey ?ez) ;; need to deep copy ?ez
-                    ))
+  ;; Retn rules (yielding Retn)
+  ;; O P T I M I Z A T I O N 
+
+  (:action Retn-K
+    :parameters ()
+    :precondition (and
+      (retn ?l ?e ?l')
+      (cont ?l' ?ec ?l'')
+      (K ?e)
+      (ptr-next ?e')
+      (ptr-succ ?e' ?enext))
+    :effect (and
+      (not (retn ?l ?e ?l'))
+      (not (cont ?l' ?ec ?l''))
+      (retn ?l ?e' ?l'')
+      (K1 ?e' ?ec)
+      (not (ptr-next ?e'))
+      (ptr-next ?enext)))
+
+  (:action Retn-S
+    :parameters ()
+    :precondition (and
+      (retn ?l ?e ?l')
+      (cont ?l' ?ec ?l'')
+      (S ?e)
+      (ptr-next ?e')
+      (ptr-succ ?e' ?enext))
+    :effect (and
+      (not (retn ?l ?e ?l'))
+      (not (cont ?l' ?ec ?l''))
+      (retn ?l ?e' ?l'')
+      (S1 ?e' ?ec)
+      (not (ptr-next ?e'))
+      (ptr-next ?enext)))
+
+  (:action Retn-S1
+    :parameters ()
+    :precondition (and
+      (retn ?l ?e ?l')
+      (cont ?l' ?ec ?l'')
+      (S1 ?e ?ex)
+      (ptr-next ?e')
+      (ptr-succ ?e' ?enext))
+    :effect (and
+      (not (retn ?l ?e ?l'))
+      (not (cont ?l' ?ec ?l''))
+      (retn ?l ?e' ?l'')
+      (S2 ?e' ?ex ?ec)
+      (not (ptr-next ?e'))
+      (ptr-next ?enext)))
 
 )
