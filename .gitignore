@@ -10,3 +10,4 @@ lex.*.c
 sgplan
 *~
 .cm/
+tags
