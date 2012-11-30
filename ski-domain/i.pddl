@@ -28,14 +28,12 @@
     (ptr-succ p8 p9)
     (ptr-succ p9 p10)
 
-    ;; (I I)
+    ;; I
     (eval d0 p0 d1)
-    (App p0 p1 p2)
-    (I p1)
-    (I p2)
+    (I p0)
 
     ;; dst/ptr initialization
     (dst-next d2)
-    (ptr-next p3))
+    (ptr-next p1))
 
   (:goal (exists (?e - ptr) (retn d0 ?e d1))))
