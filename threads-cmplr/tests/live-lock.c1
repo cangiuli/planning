@@ -1,0 +1,51 @@
+/* A lock that has mutual exclusion but not the rest. */
+/* We can only disprove a very strict bounded waiting property, though. */
+
+int flag0 = 0; int flag1 = 0;
+int num_in_section = 0;
+
+int thread1_waiting = 0; int thread2_iters = 0;
+
+thread0() {
+	while (1) {
+
+		flag0 = 1;
+
+		thread2_iters = 0; thread1_waiting = 1;
+
+		while (flag1) {
+			/* Clear the flag and set it again. */
+			flag0 = 0;
+			flag0 = 1;
+		}
+
+		/* critical section */
+		thread1_waiting = 0;
+		num_in_section++;
+		num_in_section--;
+
+		flag0 = 0;
+	}
+}
+
+thread1() {
+	while (1) {
+
+		flag1 = 1;
+		while (flag0) {
+			flag1 = 0;
+			flag1 = 1;
+		}
+
+		/* critical section */
+		thread2_iters++;
+		num_in_section++;
+		num_in_section--;
+
+		flag1 = 0;
+	}
+}
+
+main() {
+	fork(thread0, thread1);
+}

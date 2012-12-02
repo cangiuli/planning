@@ -1,7 +1,8 @@
-;; run dekker's in a loop and see if mutual exclusion violated
-;; we want it to fail.
+;; run dekker's in a loop and check a very strong bounded waiting property
+;; we want it to fail. Scratch that, it doesn't /have/ that very strong
+;; bounded waiting property.
 
-(define (problem dekker-loop)
+(define (problem dekker-bw)
     (:domain threads)
     (:objects
         n0 n1 n2 n3 n4 n5 n6 - number
@@ -65,7 +66,8 @@
     )
     (:goal (and
             ;(done out)
-            (value num_in_section n2)
+            (value thread1_waiting n1)
+            (value thread2_iters n2)
             ; GOALS
         )
     )
