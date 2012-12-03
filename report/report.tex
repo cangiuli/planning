@@ -11,9 +11,6 @@ Project Report}
 \begin{document}
 \maketitle
 
-\abstract{
-}
-
 \section{Introduction}
 
 Program verification, the problem of stating with certainty that a given piece of code obeys a specification or demonstrating a counterexample of incorrect behaviour, has long been explored from many different angles.
@@ -34,6 +31,7 @@ Our results are mixed.
 Of the (how many?) modern planners we used, none were able to efficiently execute lambda calculus programs. % TODO how many
 On the other hand, we found planners were quite efficient at checking concurrent programs against their specifications,
 and could even be used to reason about potentially nonterminating programs, which is a sticking point for many modern model checkers. % is this really true?
+Inspired by this, we also provide a compiler for automatically generating STRIPS problem statements for concurrent programs from a more concise representation.
 We discuss why modern planners proved inadequate for reasoning about functional programming, and also discuss the implications for concurrency verification.
 
 \section{Functional Programming}
