@@ -11,7 +11,30 @@ Project Report}
 \begin{document}
 \maketitle
 
+\abstract{
+}
+
 \section{Introduction}
+
+Program verification, the problem of stating with certainty that a given piece of code obeys a specification or demonstrating a counterexample of incorrect behaviour, has long been explored from many different angles.
+The two major schools of thought are {\em formal verification} and {\em informal verification}.
+Formal verification provides strong, logically well-founded guarantees about the certainty of an analysis's output.
+Formal analyses are rooted in the theoretical structure of programs, which can be specified using techniques such as substructural operational semantics~\cite{rob}.
+Informal verification is less rigorous -- informal analyses may sometimes produce false positives or false negatives -- but more immediately applicable to a broader range of programs.
+Systems research often employs informal analyses to reason about ill-specified code ``in the real world'', which is especially useful for finding concurrency errors~\cite{ben}.
+
+In artificial intelligence, a {\em planner} is a tool which, given a domain definition and initial state, computes a sequence of actions for achieving a goal.
+Moreover, a {\em complete} planner is one whose failure to achieve a goal is a formal guarantee that no sequence of actions exists for that goal.
+We investigate the correspondence between planning and program verification: the domain is the programming language (or the abstract machine), the initial state is the program being verified, the goal is the specification, and the plans are execution traces.
+If a complete planner cannot plan for an invalid state, then a program is proven safe.
+
+We show how planning applies to verification in two specific areas: first, for encoding functional programming using the lambda calculus and substructural operational semantics,
+and second, for reasoning about concurrent computation with a focus on synchronisation algorithms.
+Our results are mixed.
+Of the (how many?) modern planners we used, none were able to efficiently execute lambda calculus programs. % TODO how many
+On the other hand, we found planners were quite efficient at checking concurrent programs against their specifications,
+and could even be used to reason about potentially nonterminating programs, which is a sticking point for many modern model checkers. % is this really true?
+We discuss why modern planners proved inadequate for reasoning about functional programming, and also discuss the implications for concurrency verification.
 
 \section{Functional Programming}
 
@@ -19,7 +42,14 @@ Carlo - SKI machine/implementation and how badly it failed
 
 \section{Concurrent Imperative Programming}
 
+Ben - encoding a fork/join language and proving properties about sync algorithms
+
+Sully - concurrent compiler
+
 \section{Results}
+
+\bibliography{citations}{}
+\bibliographystyle{alpha}
 
 \end{document}
 
