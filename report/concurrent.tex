@@ -1,7 +1,56 @@
 \subsection{Threads Domain}
-Ben - encoding a fork/join language and proving properties about sync algorithms
 
-\subsection{Synchronisation Algorithms}
+We encoded a simple assembly-like abstract machine with a fork/join primitive as a planning domain, which we call the ``threads'' domain.
+Its predicates are used to indicate values of data and to indicate a program's instruction sequence.
+Its actions represent the evaluation rules for the language's instruction set.
+
+Some predicates express data:
+\begin{itemize}
+	\item \texttt{value ?name ?value} indicates the value of a variable with a given name.
+	\item \texttt{succ ?n ?m} indicates the structure of integers. We were unable to find a planner that supported built-in integers, so for each problem we defined a sequence of literals (\texttt{n0}, \texttt{n1}, etc) and used the successor relation to abstractly express (very) simple arithmetic.
+\end{itemize}
+
+We now discuss the specifics of selected instructions. In the domain definition, each instruction has both a predicate (to be used in the representation of a program's instruction stream) and an action (which allows the planner to change the machine state when it encounters).
+
+\begin{itemize}
+	\item \texttt{set ?me ?next ?name ?value} - Assigns a value to a variable. \texttt{me} is the label for this instruction (all instructions share this pattern), \texttt{next} is the label of the next instruction to evaluate after this one (most instructions share this pattern). The increment, decrement, load, atomic-exchange, and atomic-add instructions are similar.
+	\item \texttt{branch ?me ?name ?iftrue ?iffalse} - Flow control. Instead of \texttt{next}, there are two next instructions, selected between depending whether \texttt{name} is \texttt{n0}.
+	\item \texttt{exit ?me} - Terminates execution of the current thread (or program).
+	\item \texttt{fork ?me ?next ?child1 ?child2} - Runs \texttt{child1} and \texttt{child2} to completion (both must \texttt{exit}), and then advances to \texttt{next}.
+\end{itemize}
+
+Finally, a special predicate indicates the program counter (instruction pointer):
+\begin{itemize}
+	\item \texttt{eval ?instruction ?out} - The first argument is the label associated with the next instruction to be executed. Its second argument is the ``destination'' label, a special label used to identify which threads have terminated. There will be as many \texttt{eval} tokens as currently-running threads.
+\end{itemize}
+
+\subsection{Warmup: Data Races}
+
+Our first test case for the threads domain was to demonstrate a simple data race between two threads. We show how two interleaving threads attempting to increment a shared variable can produce nondeterministically different results. The initial state of the planning problem expresses the following program (or various elaborations thereof, such as placing the accesses in a loop or adding a third thread):
+
+	\begin{center}
+	\begin{tabular}{ll}
+	\multicolumn{2}{c}{\texttt{fork(thread1, thread2);}} \\
+	& \\
+	\texttt{thread1() \{} & \texttt{thread2() \{} \\
+	\texttt{~~~~temp0 = x;~~~~} & \texttt{~~~~temp1 = x;} \\
+	\texttt{~~~~temp0++;} & \texttt{~~~~temp1++;} \\
+	\texttt{~~~~x = temp0;} & \texttt{~~~~x = temp1;} \\
+	\texttt{\}} & \texttt{\}} \\
+	\end{tabular}
+	\end{center}
+
+In this example, possible values for \texttt{x} at the end are 1 and 2. The problems with filenames starting in \texttt{prob1} demonstrate this problem; those with filenames starting in \texttt{prob2} and \texttt{prob3} are elaborations on it.
+
+\subsection{Verifying Synchronisation Algorithms}
+
+We next explored several different algorithms for {\em synchronisation} -- the problem of protecting designated ``critical sections'' of execution from unsafe concurrent access. Mutual exclusion algorithms are characterised by three properties: {\em mutual exclusion}, {\em bounded waiting}, and {\em progress}. We next discuss how planners helped us verify these properties.
+
+\begin{enumerate}
+\item {\bf Mutual Exclusion.}
+\item {\bf Bounded Waiting.}
+\item {\bf Progress.}
+\end{enumerate}
 
 \subsection{Compiler}
 Sully - concurrent compiler
