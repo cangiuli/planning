@@ -29,6 +29,46 @@
 		; 'done' is automatically generated when Exiting. Do not use directly.
 		(done ?out - label)
 		(eval ?next ?out - label) ; instruction pointer
+
+		; atomic operations
+		(xchg ?me ?next ?dest ?src - label)
+		(xadd ?me ?next ?dest ?result - label) ; only supports adding 1
+	)
+
+	(:action Xchg
+		:parameters (?me ?out ?next ?dest ?src ?dv ?sv)
+		:precondition (and
+				(eval ?me ?out)
+				(xchg ?me ?next ?dest ?src)
+				(value ?dest ?dv)
+				(value ?src ?sv)
+			)
+		:effect (and
+				(not (eval ?me ?out))
+				(eval ?next ?out)
+				(not (value ?dest ?dv))
+				(not (value ?src ?sv))
+				(value ?dest ?sv)
+				(value ?src ?dv)
+			)
+	)
+	(:action Xadd
+		:parameters (?me ?out ?next ?dest ?result ?dv ?sv ?rv)
+		:precondition (and
+				(eval ?me ?out)
+				(xadd ?me ?next ?dest ?result)
+				(value ?dest ?dv)
+				(succ ?dv ?sv) ; sv == successor val
+				(value ?result ?rv) ; rv == old return val
+			)
+		:effect (and
+				(not (eval ?me ?out))
+				(eval ?next ?out)
+				(not (value ?dest ?dv))
+				(not (value ?result ?rv))
+				(value ?dest ?sv)
+				(value ?result ?dv)
+			)
 	)
 
 	(:action BranchTrue
