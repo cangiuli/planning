@@ -1,6 +1,6 @@
 .PHONY: clean
 
-report.pdf: report.tex citations.bib
+report.pdf: report.tex citations.bib concurrent.tex concurrent-results.tex
 	pdflatex $< ; bibtex $(<:%.tex=%) ; pdflatex $< ; pdflatex $<
 
 clean:
