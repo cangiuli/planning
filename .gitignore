@@ -11,3 +11,5 @@ sgplan
 *~
 .cm/
 tags
+*.bbl
+*.blg
