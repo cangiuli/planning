@@ -36,7 +36,7 @@
 	)
 
 	(:action Xchg
-		:parameters (?me ?out ?next ?dest ?src ?dv ?sv)
+		:parameters (?me ?out ?next ?dest ?src - label ?dv ?sv - number)
 		:precondition (and
 				(eval ?me ?out)
 				(xchg ?me ?next ?dest ?src)
@@ -53,7 +53,7 @@
 			)
 	)
 	(:action Xadd
-		:parameters (?me ?out ?next ?dest ?result ?dv ?sv ?rv)
+		:parameters (?me ?out ?next ?dest ?result - label ?dv ?sv ?rv - number)
 		:precondition (and
 				(eval ?me ?out)
 				(xadd ?me ?next ?dest ?result)
