@@ -18,7 +18,8 @@
 		(decr ?me ?next ?name - label) ; in-place decrement
 		(load ?me ?next ?dest ?src - label) ; "dest <- src;", store is the same
 		(set ?me ?next ?dest - label ?n - number) ; "dest <- n;"
-        (branch ?me ?name ?iftrue ?iffalse - label)
+		(branch ?me ?name ?iftrue ?iffalse - label)
+		(brancheq ?me ?name1 ?name2 ?ifeq ?ifneq - label)
 
 		(fork ?me ?next
 		          ?child1 ?child2 ; both must 'exit' before 'next' can run
@@ -68,6 +69,34 @@
 				(not (value ?result ?rv))
 				(value ?dest ?sv)
 				(value ?result ?dv)
+			)
+	)
+
+	(:action BranchEq
+		:parameters (?me ?out ?name1 ?name2 ?ifeq ?ifneq - label ?val - number)
+		:precondition (and
+				(eval ?me ?out)
+				(brancheq ?me ?name1 ?name2 ?ifeq ?ifneq)
+				(value ?name1 ?val)
+				(value ?name2 ?val)
+			)
+		:effect (and
+				(not (eval ?me ?out))
+				(eval ?ifeq ?out) ; jump to true branch
+			)
+	)
+	(:action BranchNeq
+		:parameters (?me ?out ?name1 ?name2 ?ifeq ?ifneq - label ?val1 ?val2 - number)
+		:precondition (and
+				(eval ?me ?out)
+				(brancheq ?me ?name1 ?name2 ?ifeq ?ifneq)
+				(value ?name1 ?val1)
+				(value ?name2 ?val2)
+				(not (= ?val1 ?val2))
+			)
+		:effect (and
+				(not (eval ?me ?out))
+				(eval ?ifneq ?out) ; jump to false branch
 			)
 	)
 
