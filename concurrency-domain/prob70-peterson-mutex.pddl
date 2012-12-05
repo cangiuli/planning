@@ -1,4 +1,6 @@
-(define (problem peterson-loop)
+; THIS IS GENERATED CODE: DO NOT EDIT
+; A plan should NOT be found
+(define (problem prob70-peterson-mutex)
     (:domain threads)
     (:objects
         n0 n1 n2 n3 n4 n5 n6 - number
@@ -41,7 +43,7 @@
         (incr thread011 thread012 num_in_section)
         (decr thread012 thread013 num_in_section)
         (set thread013 thread00 flag0 n0)
-        (branch thread014 tmp0 thread00 thread01)
+        (exit thread014)
 
         ; thread1
         (set thread10 thread11 flag1 n1)
@@ -56,7 +58,7 @@
         (incr thread19 thread110 num_in_section)
         (decr thread110 thread111 num_in_section)
         (set thread111 thread10 flag1 n0)
-        (branch thread112 tmp1 thread10 thread11)
+        (exit thread112)
 
         ; main
         (fork main0 main1 thread00 thread10)
@@ -66,7 +68,6 @@
     )
     (:goal (and
             (value num_in_section n2)
-            ; GOALS
         )
     )
 )

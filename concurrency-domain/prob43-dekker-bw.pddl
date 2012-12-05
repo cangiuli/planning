@@ -1,11 +1,6 @@
-;; run dekker's in a loop and check a very strong bounded waiting property
-;; we want it to fail. Scratch that, it doesn't /have/ that very strong
-;; bounded waiting property.
-
-;; The number of thread2's iterations can be arbitrarily large (within the
-;; domain's encoded arithmetic) and the planner will still succeed.
-
-(define (problem dekker-bw)
+; THIS IS GENERATED CODE: DO NOT EDIT
+; A plan SHOULD be found
+(define (problem prob43-dekker-bw)
     (:domain threads)
     (:objects
         n0 n1 n2 n3 n4 n5 n6 - number
@@ -68,10 +63,8 @@
         (eval main0 out)
     )
     (:goal (and
-            ;(done out)
             (value thread1_waiting n1)
-            (value thread2_iters n5) ; This number can be set to anything, and a trace will still be found.
-            ; GOALS
+            (value thread2_iters n4)
         )
     )
 )

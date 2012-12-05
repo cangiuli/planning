@@ -1,7 +1,6 @@
-;; Check that Peterson's Algorithm obeys a very strict bounded waiting
-;; property.
-
-(define (problem peterson-bw)
+; THIS IS GENERATED CODE: DO NOT EDIT
+; A plan should NOT be found
+(define (problem prob71-peterson-bw)
     (:domain threads)
     (:objects
         n0 n1 n2 n3 n4 n5 n6 - number
@@ -70,7 +69,6 @@
     (:goal (and
             (value thread1_waiting n1)
             (value thread2_iters n2)
-            ; GOALS
         )
     )
 )

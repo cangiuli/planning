@@ -1,29 +1,34 @@
-;; A really simple loop that executes twice
-(define (problem threads-x0)
-	(:domain threads)
-	(:objects
-        n0 n1 n2 n3 - number
+; THIS IS GENERATED CODE: DO NOT EDIT
+; A plan SHOULD be found
+(define (problem prob40-loop)
+    (:domain threads)
+    (:objects
+        n0 n1 n2 n3 n4 n5 n6 - number
+        out - label
+        x - label
 
-		x
-		out i0 i1 i2 i3 i4
-		- label
-	)
-	(:init
+        main0 main1 main2
+        - label
+
+    )
+    (:init
         (succ n0 n1) (succ n1 n2) (succ n2 n3)
+        (succ n3 n4) (succ n4 n5) (succ n5 n6)
 
-		; .data
-		(value x n2)
+        ; .data
+        (value x n2)
 
-		; .text
-		(eval i0 out)
-        (branch i0 x i1 i2)
-        (decr i1 i0 x)
-        (exit i2)
+        ; .text
+        ; main
+        (branch main0 x main1 main2)
+        (decr main1 main0 x)
+        (exit main2)
 
-	)
-	(:goal (and
-			(done out)
-            (value x n0) ; x = 0
-		)
-	)
+        (eval main0 out)
+    )
+    (:goal (and
+            (done out)
+            (value n n0)
+        )
+    )
 )

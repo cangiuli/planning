@@ -1,4 +1,6 @@
-/* this lock lacks mutual exclusion */
+/* This lock lacks mutual exclusion and we should be able to
+ * demonstrate that. */
+
 int locked = 0;
 int num_in_section = 0;
 

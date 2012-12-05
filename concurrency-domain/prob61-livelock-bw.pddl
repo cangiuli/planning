@@ -1,7 +1,6 @@
-;; This is a mutex without bounded waiting and progress.
-;; We show that it fails a very strong bounded waiting property.
-
-(define (problem live-lock-mutex)
+; THIS IS GENERATED CODE: DO NOT EDIT
+; A plan SHOULD be found
+(define (problem prob61-livelock-bw)
     (:domain threads)
     (:objects
         n0 n1 n2 n3 n4 n5 n6 - number
@@ -57,10 +56,8 @@
         (eval main0 out)
     )
     (:goal (and
-;            (done out)
             (value thread1_waiting n1)
-            (value thread2_iters n2)
-            ; GOALS
+            (value thread2_iters n4)
         )
     )
 )

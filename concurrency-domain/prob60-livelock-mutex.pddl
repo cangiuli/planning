@@ -1,7 +1,6 @@
-;; This is a mutex without bounded waiting and progress.
-;; Mutual exclusion should work, though
-
-(define (problem live-lock-mutex)
+; THIS IS GENERATED CODE: DO NOT EDIT
+; A plan should NOT be found
+(define (problem prob60-livelock-mutex)
     (:domain threads)
     (:objects
         n0 n1 n2 n3 n4 n5 n6 - number
@@ -57,9 +56,7 @@
         (eval main0 out)
     )
     (:goal (and
-;            (done out)
             (value num_in_section n2)
-            ; GOALS
         )
     )
 )

@@ -1,7 +1,6 @@
-;; run dekker's in a loop and see if mutual exclusion violated
-;; we want it to fail.
-
-(define (problem dekker-loop)
+; THIS IS GENERATED CODE: DO NOT EDIT
+; A plan should NOT be found
+(define (problem prob42-dekker-loop)
     (:domain threads)
     (:objects
         n0 n1 n2 n3 n4 n5 n6 - number
@@ -64,9 +63,7 @@
         (eval main0 out)
     )
     (:goal (and
-            ;(done out)
             (value num_in_section n2)
-            ; GOALS
         )
     )
 )
