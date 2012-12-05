@@ -1,4 +1,6 @@
-(define (problem broken-lock)
+; THIS IS GENERATED CODE: DO NOT EDIT
+; A plan SHOULD be found
+(define (problem prob50-broken-mutex)
     (:domain threads)
     (:objects
         n0 n1 n2 n3 n4 n5 n6 - number
@@ -43,9 +45,7 @@
         (eval main0 out)
     )
     (:goal (and
-;            (done out)
             (value num_in_section n2)
-            ; GOALS
         )
     )
 )
