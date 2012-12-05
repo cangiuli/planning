@@ -99,9 +99,124 @@ We next explored several different algorithms for {\em synchronisation} -- the p
 \end{enumerate}
 
 \subsection{Compiler}
-Sully - concurrent compiler
+
+To help test our shared memory concurrency domain and to demonstrate
+its generality, we built a compiler for a very simple imperative
+language with standard structured programming constructs. The compiler
+is fairly simple, but makes it vastly nicer to create problems for our
+imperative concurrency machine domain. In Figure
+\ref{fig:dekker-code}, we show part of the source program we use for
+testing Dekker's algorithm. In Figure \ref{fig:dekker-asm} we show the
+corresponding output problem for our domain. Clearly, the source is
+much easier to work with.
 
 
-To help test our shared memory concurrency domain and to generate its
-generality, we built a compiler for a very simple imperative language
-with standard structured programming constructs.
+
+\begin{figure}
+\begin{center}
+\begin{verbatim}
+int flag0 = 0; int flag1 = 0; int turn = 0;
+
+int num_in_section = 0;
+int thread1_waiting = 0; int thread2_iters = 0;
+
+thread0() {
+    while (1) {
+        flag0 = 1;
+        thread2_iters = 0; thread1_waiting = 1;
+
+        while (flag1) {
+            if (turn) { /* turn != 0 */
+                flag0 = 0;
+                while (turn) { /* turn != 0 */
+                    /* busy wait */
+                }
+                flag0 = 1;
+            }
+        }
+
+        /* critical section */
+        thread1_waiting = 0;
+        num_in_section++;
+        num_in_section--;
+
+        turn = 1;
+        flag0 = 0;
+    }
+}
+
+thread1() { /* ELIDED */ }
+
+main() {
+    fork(thread0, thread1);
+}
+\end{verbatim}
+\end{center}
+\caption{Dekker's algorithm in our simple language}
+\label{fig:dekker-code}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\begin{verbatim}
+(define (problem dekker-loop)
+    (:domain threads)
+    (:objects
+        n0 n1 n2 n3 n4 n5 n6 - number
+        out - label
+        flag0 flag1 turn num_in_section thread1_waiting thread2_iters - label
+
+        thread00 thread01 thread02 thread03 thread04 thread05 thread06 thread07
+        thread08 thread09 thread010 thread011 thread012 thread013
+        thread10 thread11 thread12 thread13 thread14 thread15 thread16 thread17
+        thread18 thread19 thread110 thread111
+        main0 main1
+        - label
+    )
+    (:init
+        (succ n0 n1) (succ n1 n2) (succ n2 n3)
+        (succ n3 n4) (succ n4 n5) (succ n5 n6)
+        ; .data
+        (value flag0 n0)
+        (value flag1 n0)
+        (value turn n0)
+        (value num_in_section n0)
+        (value thread1_waiting n0)
+        (value thread2_iters n0)
+
+        ; .text
+        ; thread0
+        (set thread00 thread01 flag0 n1)
+        (set thread01 thread02 thread2_iters n0)
+        (set thread02 thread03 thread1_waiting n1)
+        (branch thread03 flag1 thread04 thread08)
+        (branch thread04 turn thread05 thread03)
+        (set thread05 thread06 flag0 n0)
+        (branch thread06 turn thread06 thread07)
+        (set thread07 thread03 flag0 n1)
+        (set thread08 thread09 thread1_waiting n0)
+        (incr thread09 thread010 num_in_section)
+        (decr thread010 thread011 num_in_section)
+        (set thread011 thread012 turn n1)
+        (set thread012 thread00 flag0 n0)
+        (exit thread013)
+
+        ; thread1
+        ; ELIDED
+        ; main
+        (fork main0 main1 thread00 thread10)
+        (exit main1)
+
+        (eval main0 out)
+    )
+    (:goal (and
+            ; INSERT GOALS HERE
+        )
+    )
+)
+\end{verbatim}
+\end{center}
+\caption{The corresponding generated problem for Dekker's algorithm}
+\label{fig:dekker-asm}
+\end{figure}
+
