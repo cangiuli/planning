@@ -1,6 +1,11 @@
-;; This has succ and pred but represents them with labels for
-;; nicer output.
+;; This was supposed to be a lambda calculus implemented with
+;; substitution extended with operations on natural numbers.  It
+;; doesn't actually have evaluation rules for lambda calculus terms,
+;; since we didn't finish implementing the whole thing because it
+;; started exploding once we added the definition of substitution.
 
+;; This has succ and pred like in the demo-domain but represents them
+;; with labels for nicer output.
 
 
 (define (domain lambda)
@@ -15,9 +20,6 @@
 
    ;; Substitution things
    (subst ?e1 ?x ?e2 ?e - label) ;; [e1/x]e2 = e
-;;   (subst ?e1 ?x ?e2 ?out - label) ;; [e1/x]e2 = e
-;;   (subst-retn ?e ?out - label)
-;;   (subst-cont ?k ?e ?out - label)
 
    ;; Stuff for the domain being represented
    (zero ?l - label)
@@ -50,38 +52,6 @@
                     (not (fresh-ctr ?x))
                     (fresh-ctr ?y)
                     (fresh ?y)))
-
-  ;; Small-step Substitution.
-
-  ; (:action Subst-Var-Eq
-  ;          :parameters (?e1 ?x ?e2 ?e ?out - label)
-  ;          :precondition (and
-  ;                         (subst ?e1 ?x ?e2 ?out)
-  ;                         (var ?e2 ?x)
-  ;                         )
-  ;          :effect (and
-  ;                   (not (subst ?e1 ?x ?e2 ?out))
-  ;                   (subst-retn ?e1 ?out)))
-
-  ; (:action Subst-Var-Neq
-  ;          :parameters (?e1 ?x ?y ?e2 ?e ?out - label)
-  ;          :precondition (and
-  ;                         (subst ?e1 ?x ?e2 ?out)
-  ;                         (var ?e2 ?y)
-  ;                         (not (= ?x ?y))
-  ;                         )
-  ;          :effect (and
-  ;                   (not (subst ?e1 ?x ?e2 ?out))
-  ;                   (subst-retn ?e2 ?out)))
-
-  ; ;; We will do Penn style substitution
-  ; (:action Subst-Lam-Eq
-  ;          :parameters (?e1 ?x ?e2 ?ebody ?e - label)
-  ;          :precondition (and
-  ;                         (lam ?e2 ?x ?ebody)
-  ;                         )
-  ;          :effect (subst ?e1 ?x ?e2 ?e2))
-
 
   ;; Normal Substitution.
   (:action Subst-Var-Eq

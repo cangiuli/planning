@@ -1,4 +1,5 @@
 CM.make "sources.cm";
+
 open Toplevel C1Named;
 
 (* A very basic looping program test. *)
@@ -38,3 +39,4 @@ compile "tests/peterson-loop.c1"
 compile "tests/peterson-loop.c1"
         (NotFinish, NoPlan, [("thread1_waiting", 1), ("thread2_iters", 2)])
         "../concurrency-domain/prob71-peterson-bw.pddl";
+

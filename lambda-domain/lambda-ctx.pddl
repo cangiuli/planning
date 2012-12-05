@@ -1,3 +1,12 @@
+;; This is a lambda calculus interpreter that uses explicit contexts
+;; to store variable bindings instead of substitution. It doesn't work
+;; either.
+
+;; It actually is complete, but the planner ran out of memory.
+
+;; It uses derived predicates to look up variables in the
+;; context. Even if we comment those rules out, though, the planner
+;; still runs out of memory, so that isn't the main problem.
 
 (define (domain lambda)
   (:requirements :strips :adl :typing :derived-predicates)
