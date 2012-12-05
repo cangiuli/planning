@@ -51,23 +51,66 @@ We next explored several different algorithms for {\em synchronisation} -- the p
 	To ensure that an algorithm provides mutual exclusion, we write programs of the following form, in which both threads modify a \texttt{num\_in\_section} counter to indicate when they're in the critical section:
 	\begin{center}
 	\begin{tabular}{ll}
-	\multicolumn{2}{c}{\texttt{num\_in\_section = 0;}} \\
+	\multicolumn{2}{c}{\texttt{num\_in\_section = 0;~~~~~}} \\
 	\multicolumn{2}{c}{\texttt{fork(thread1, thread2);}} \\
 	& \\
 	\texttt{thread1() \{} & \texttt{thread2() \{} \\
 	\texttt{~~~~while (true) \{} & \texttt{~~~~while (true) \{} \\
-	\texttt{~~~~~~~~lock\_sequence();} & \texttt{~~~~~~~~lock\_sequence();} \\
+	\texttt{~~~~~~~~\em lock\_sequence();} & \texttt{~~~~~~~~\em lock\_sequence();} \\
 	\texttt{~~~~~~~~num\_in\_section++;} & \texttt{~~~~~~~~num\_in\_section++;} \\
 	\texttt{~~~~~~~~num\_in\_section--;} & \texttt{~~~~~~~~num\_in\_section--;} \\
-	\texttt{~~~~~~~~unlock\_sequence();\qquad} & \texttt{~~~~~~~~unlock\_sequence();} \\
+	\texttt{~~~~~~~~\em unlock\_sequence();\qquad} & \texttt{~~~~~~~~\em unlock\_sequence();} \\
 	\texttt{~~~~\}} & \texttt{~~~~\}} \\
 	\texttt{\}} & \texttt{\}} \\
 	\end{tabular}
 	\end{center}
 	We then set the goal statement to be \texttt{num\_in\_section == 2}. When a complete planner cannot plan for this fact, it guarantees that no execution interleaving exists in which both threads are in the section at once -- in other words, that mutual exclusion is satisfied.
-	\item {\bf Bounded Waiting.} An algorithm that provides  
-	\item {\bf Progress.} An algorithm that provides
+	\item {\bf Bounded Waiting.} An algorithm that provides bounded waiting does not allow any thread to be ``starved'' while waiting for the lock; that is, once a thread has expressed interest in acquiring the lock, there exists some finite number $N$ such that other threads can perform no more than $N$ subsequent operations on the lock before the first thread acquires it.
+		To ensure bounded waiting, we write programs of the following form, in which \texttt{thread1} indicates when it has ``expressed interest in the lock``, and \texttt{thread2} counts the number of times it acquires the lock in the meantime.
+	\begin{center}
+	\begin{tabular}{ll}
+	\multicolumn{2}{c}{\texttt{thread1\_waiting = false;}} \\
+	\multicolumn{2}{c}{\texttt{thread2\_iters = 0;~~~~~~~}} \\
+	\multicolumn{2}{c}{\texttt{fork(thread1, thread2);~~}} \\
+	& \\
+	\texttt{thread1() \{} & \texttt{thread2() \{} \\
+	\texttt{~~~~while (true) \{} & \texttt{~~~~while (true) \{} \\
+	\texttt{~~~~~~~~\em lock\_express\_interest\_step();\qquad} & \texttt{~~~~~~~~\em lock\_sequence();} \\
+	\texttt{~~~~~~~~thread1\_waiting = true;} & \texttt{~~~~~~~~thread2\_iters++;} \\
+	\texttt{~~~~~~~~thread2\_iters = 0;} & \texttt{~~~~~~~~\em unlock\_sequence();} \\
+     \texttt{~~~~~~~~\em lock\_acquire\_step();} & \texttt{~~~~\}} \\
+	 \texttt{~~~~~~~~thread1\_waiting = false;} & \texttt{\}} \\
+	\texttt{~~~~~~~~\em unlock\_sequence();} & \\
+	\texttt{~~~~\}} & \\
+	\texttt{\}} & \\
+	\end{tabular}
+	\end{center}
+		We then set the goal statement to be \texttt{thread1\_waiting \&\& thread2\_iters = 2}. When a complete planner cannot plan for this fact, it guarantees bounded waiting for $N=2$. If a planner does find a plan, we change $2$ to some higher number until the planner fails; if no such higher number exists, bounded waiting is not satisfied.
+
+		This setup also assumes that the lock sequence can be subdivided into the two subsequences denoted above. If there exists no such split, we say that the algorithm does not provide bounded waiting.\footnote{
+		This nonexistence can be verified by enumerating all possible instructions in the lock sequence before which to put the new steps. In our test suite, we are not exhaustive about this, though it is possible.}
+	\item {\bf Progress.} An algorithm that provides progress guarantees that for all $N$, with $N$ operations on the lock, there exists some $M$ number of instructions such that no execution trace longer than $M$ achieves fewer than $N$ operations. (In other words, all operations complete in finite time; there can be no livelocks or deadlocks on a single lock.)
+
+		We could not devise a way to verify progress using the planning technology we had at hand. However, we imagine a hypothetical planner which could perform analysis on the state-space graph to provide this. In planning terminology, progress is stated as follows:
+		\begin{itemize}
+			\item For all reachable states $S$, there exists a plan from $S$ that acquires+releases the lock an additional time (no deadlock), and
+			\item Given some $N$, there exists a finite $M$ such that all plans of length $M$ acquire+release the lock $N$ times (no livelock).
+		\end{itemize}
 \end{enumerate}
+
+\subsubsection{Results}
+
+Using test cases following the above schemes, we verified or generated counterexamples for mutual exclusion and bounded waiting for four well-known synchronisation algorithms.\footnote{
+Pseudocode sketches of each of these algorithms can be found on the wikipedia articles of the same name.}
+
+\begin{itemize}
+	\item {\bf Dekker's algorithm.} Demonstrated in the test cases that start with \texttt{prob4}. We verify mutual exclusion and refute bounded waiting.
+	\item {\bf Peterson's algorithm.} Demonstrated in the test cases that start with \texttt{prob7}. We verify mutual exclusion and bounded waiting.
+	\item {\bf Spinlock (atomic-exchange).} Demonstrated in the test cases that start with \texttt{prob8}. We verify mutual exclusion and refute bounded waiting.
+	\item {\bf Lamport's bakery algorithm (atomic-add).} Demonstrated in the test cases that start with \texttt{prob9}. We verify mutual exclusion and bounded waiting.
+\end{itemize}
+
+We also include a broken algorithm which doesn't even provide mutual exclusion, \texttt{prob51-broken-lock.pddl}, for which the planner can plan for \texttt{num\_in\_section == 2}.
 
 \subsection{Compiler}
 Sully - concurrent compiler
