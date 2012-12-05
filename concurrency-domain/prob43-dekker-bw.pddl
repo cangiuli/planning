@@ -2,6 +2,9 @@
 ;; we want it to fail. Scratch that, it doesn't /have/ that very strong
 ;; bounded waiting property.
 
+;; The number of thread2's iterations can be arbitrarily large (within the
+;; domain's encoded arithmetic) and the planner will still succeed.
+
 (define (problem dekker-bw)
     (:domain threads)
     (:objects
@@ -67,7 +70,7 @@
     (:goal (and
             ;(done out)
             (value thread1_waiting n1)
-            (value thread2_iters n2)
+            (value thread2_iters n5) ; This number can be set to anything, and a trace will still be found.
             ; GOALS
         )
     )
