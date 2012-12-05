@@ -19,6 +19,10 @@ lambda-domain/ - two failed attempts to implement the lambda calculus
                      based lambda calculus evaluator
  - some tests
 
+plus-domain/ - an implementation of Prolog-style natural number addition
+ - plus.pddl - the plus domain
+ - some tests
+
 ski-domain/ - an attempt to embed the SKI combinator calculus
  - SKI.hs - a SKI evaluator in haskell
  - ski.pddl - the SKI domain

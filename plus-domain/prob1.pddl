@@ -1,3 +1,5 @@
+; Add two and two. Succeeds.
+
 (define (problem plus1)
   (:domain plus)
   (:objects

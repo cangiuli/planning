@@ -1,3 +1,10 @@
+; Add nine and one. As written, the planner correcly states there is no
+% solution, as we have not provided enough pointers to allocate the successor
+% nodes of the solution.
+
+% But if we add enough pointers, then the planner silently exits during
+% preprocessing, as in prob2.
+
 (define (problem plus3)
   (:domain plus)
   (:objects
@@ -19,8 +26,6 @@
     (ptr-succ p11 p12)
     (ptr-succ p12 p13)
     (ptr-succ p13 p14)
-    ;; result: it correctly fails to find a plan, because there are not enough pointers
-    ;; result': but if i add enough pointers, it silently fails as in prob2
 
     ;; Plus 9 1 _
     (S p0 p1)

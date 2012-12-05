@@ -1,3 +1,6 @@
+; Add four and two. Silently exits during preprocessing, but if you remove the
+; last several ptr-succ facts, it instead succeeds.
+
 (define (problem plus2)
   (:domain plus)
   (:objects

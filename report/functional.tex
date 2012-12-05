@@ -1,11 +1,152 @@
 % Functional and logic programming
 
-It has been 
+\subsection{Plus domain}
 
-\cite{Dixon}
+Logic programming (as in, e.g., Prolog or Twelf) is a style of declarative
+programming in which computations are expressed as predicates which hold exactly
+when the conjunction of other predicates hold; executing a program amounts to
+searching for a proof of the desired predicate.
+
+A simple example is addition of natural numbers. We represent natural numbers as
+either zero or the successor of a natural number ($\texttt{z}, \texttt{s(z)},
+\texttt{s(s(z))}$, etc.). Addition is expressed as a predicate
+\texttt{plus(M,N,P)}, which holds exactly when $M+N=P$, and could be implemented
+in Prolog as:
+\begin{verbatim}
+plus(z,N,N).
+plus(s(M),N,s(P)) :- plus(M,N,P).
+\end{verbatim}
+The first line says that $\texttt{z}+N=N$, for any $N$, and the second line says
+that $\texttt{s(}M\texttt{)}+N=\texttt{s(}P\texttt{)}$ so long as $M+N=P$. This
+is remarkably similar to a planning problem, except for the crucial difficulty
+that Prolog natively supports producing and consuming nested data like
+\texttt{s(s(z))} and instantiates rules via unification of this nested data.
+
+To represent nested data types in PDDL, we were forced to represent them
+explicitly via pointer graphs of constructors. \texttt{z} is represented by any
+pointer object $\texttt{p}n$ accompanied by the fact \texttt{(Z p$n$)};
+similarly, \texttt{s(z)} is represented by an object $\texttt{p}n$ accompanied
+by the facts \texttt{(S p$n$ p$m$)} and \texttt{(Z p$m$)}. Thus the first rule
+for addition can simply be encoded as an action with precondition \texttt{(Z
+?n1)} and effect \texttt{(Plus ?n1 ?n2 ?n2)}.
+
+The second rule, however, requires creating a new \texttt{S} constructor to wrap
+around the $P$ result of the recursive call. It is essential that this
+constructor is ``allocated'' at a new pointer, to avoid conflicting with any
+other constructor in existence. So we keep a fact \texttt{(ptr-next p$n$)} to
+store the next currently unused pointer, and increment $n$ every time we use
+this pointer (via a set of hardcoded facts \texttt{(ptr-succ p$n$ p$(n+1)$)}).
+The implementation looks like this:
+{\small
+\begin{verbatim}
+  (:action Plus-S
+    :parameters (?n1 ?n2 ?n1p ?fresh ?freshp ?ansp - ptr)
+    :precondition (and
+      (Plus ?n1p ?n2 ?ansp)
+      (S ?n1 ?n1p)
+      (ptr-next ?fresh)
+      (ptr-succ ?fresh ?freshp))
+    :effect (and
+      (not (Plus ?n1p ?n2 ?ansp))
+      (not (ptr-next ?fresh))
+      (ptr-next ?freshp)
+      (Plus ?n1 ?n2 ?fresh)
+      (S ?fresh ?ansp)))
+\end{verbatim}}
+If we strip away all the pointer manipulation, this simply states that if
+\texttt{(Plus ?n1p ?n2 ?ansp)}, then \texttt{(Plus (S ?n1p) ?n2 (S ?ansp))}.
+
+Our results here were mixed. SGPlan was immediately able to solve problems like
+$2+2$ and $4+2$, but as soon as we provisioned for pointers beyond \texttt{p14}
+(with \texttt{ptr-succ} facts), SGPlan would mysteriously exit silently during
+the preprocessing phase, regardless of the goal. We couldn't diagnose this
+error, but suspect that the planner ran out of memory while computing
+constraints between all the \texttt{ptr-succ} facts. As a result, sadly, SGPlan
+cannot compute $n+m$ for $2n+m>12$, since this would require over $15$ pointers.
+
+\subsection{Lambda calculus domain}
+
+Although the \texttt{plus} domain above quickly exhausted the planner's
+resources, we were at least able to translate a traditional logic program into
+PDDL, so we next attempted to implement the lambda calculus in a similar logic
+programming fashion. The workhorse of lambda calculus is substitution---when a
+function is applied to an argument, we substitute this argument for all
+occurrences of the formal parameter in the body of the function. (As in the
+\texttt{plus} domain, we represent lambda terms by pointer graphs.)
+
+We attempted to implement substitution by a predicate \texttt{(subst e1 x e2 e)}
+which represents the fact that \texttt{e1} substituted for \texttt{x} in
+\texttt{e2} is \texttt{e}, and added these rules to an implementation of natural
+numbers.
+
+Unfortunately, both MIPS and SGPlan throw an out-of-memory error while
+preprocessing these domains, even when the problem is simply to evaluate the
+number \texttt{(S Z)}, which evaluates to itself. Given the limited ability of
+the planners to perform addition, it is not surprising that substitution, a
+complex pointer manipulation problem, was not preprocessable whatsoever.
+
+\subsection{SKI combinator domain}
+
+Our final attempt at logic programming was to encode the SKI combinator
+calculus, a formulation of lambda calculus which has no variables whatsoever,
+but only three constants $S,K,I$ (and applications thereof) satisfying
+particular reduction rules. This has the benefit of sidestepping substitution
+entirely, and is the simplest Turing-complete functional language.
+
+Here, we implemented an abstract stack machine following the methodology of
+substructural operational semantics (SSOS), a new technique of efficiently
+representing abstract machines as transition systems in ordered logic. In this
+context, we can think of ordered logic as a planning framework (based on linear
+logic%
+\footnote{The similarity between linear logic proof search and classical
+planning has been observed multiple times in the past, as in \cite{Dixon}.}%
+) in which facts are stored in a sequence, and operators consume and
+replace sets of contiguous facts in this sequence. This sequencing allows us to
+represent stack frames without explicitly keeping track of their order.
 
 
-Substructural operational semantics (SSOS) is a 
 
-\subsection{Plus}
+Of course, planners also do not support ordered logic, so we encode the stack
+frames as a linked list of facts, each of which takes a number of pointers to
+combinator expressions, as in the previous domains. The PDDL implementation has
+13 operators; we evaluate a combinator expression $E$ by starting with the fact
+\texttt{(eval p0 $E$ pn)} (where p0 and pn are the stack frame pointers) and
+planning for \texttt{(retn p0 $E$ pn)}, a fact whose existence indicates that
+the stack is empty except for that return frame.
+
+Unsurprisingly, SGPlan also runs out of memory while planning on this domain,
+even for the simplest possible combinator term, $I$ (the identity combinator).
+MIPS attempts to fully instantiate the domain, and cannot even complete
+preprocessing. (As a side note, we had to recompile SGPlan to load this domain,
+because the \texttt{Retn-S2} instruction has 11 parameters, above the default
+maximum of 9.)
+
+\subsection{Analysis}
+
+We were successfully able to encode a variety of logic programs as classical
+planning domains, ranging from addition in Prolog to an SSOS encoding of
+combinator calculus in ordered logic. This supports our original hypothesis that
+logic programming can be viewed as a particular kind of planning problem, and
+can be encoded (albeit awkwardly) in PDDL. The biggest hurdle here is that logic
+programming is fundamentally based on unification of nested data, and PDDL
+requires that we instead express this data using pointers.
+
+The difficulty is that planners attempt to statically analyze the domain and
+problem, computing mutual exclusion, subdividing the problem, etc., but these
+domains simply cannot be handled in this fashion, because (1) the operators have
+many parameters all of the same type, due to the pointer conversion, and (2)
+there is precisely one plan to evaluate any addition/lambda term/combinator
+term, and each operator in this plan is uniquely determined by the structure of,
+respectively, the first summand and the control stack. We tried to alleviate (1)
+by using the \texttt{:typing} extension of PDDL to distinguish between, e.g.,
+stack frame pointers and expression pointers, to limit the number of
+instantiations, but the planners still ran out of memory.
+
+The deterministic nature of the operational semantics applies only to
+``well-formed'' initial states, and is a non-trivial fact. It is in fact very
+easy to find this unique plan by starting at the initial state, determining the
+unique operator and instantiation which can be applied at each state, and
+repeating until the goal is satisfied; the planners' preprocessing consumes all
+available memory but does not actually simplify the problem whatsoever. 
+
 
