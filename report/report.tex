@@ -5,9 +5,9 @@
 
 \title{
 {\large 15-887: Planning, Execution, and Learning}\\
-Project Report}
+{\bf Program Verification as Planning}}
 \author{Carlo Angiuli \and Ben Blum \and Michael Sullivan}
-\date{December 3, 2012}
+\date{December 5, 2012}
 
 \begin{document}
 \maketitle
@@ -20,7 +20,6 @@ counterexample. These verifications can be either \emph{formal} or
 \emph{informal}. In formal verification, one mathematically defines both the
 specification and the program's own semantics, using techniques such as
 substructural operational semantics~\cite{rob}, and proves that these coincide.
-
 Informal verifications are prone to false positives or false negatives---but are
 more immediately applicable to a broader range of programs. Informal analyses
 are often used in systems research to reason about ill-specified code ``in the
@@ -41,9 +40,9 @@ first, for reasoning about functional and logic programs using an encoding
 inspired by substructural operational semantics,
 and second, for reasoning about concurrent computation with a focus on synchronisation algorithms.
 Our results are mixed.
-Of the (how many?) modern planners we used, none were able to efficiently execute lambda calculus programs. % TODO how many
+Of the two modern planners we used, none were able to efficiently execute lambda calculus programs.
 On the other hand, we found planners were quite efficient at checking concurrent programs against their specifications,
-and could even be used to reason about potentially nonterminating programs, which is a sticking point for many modern model checkers. % is this really true?
+and could even be used to reason about nonterminating programs.
 Inspired by this, we also provide a compiler for automatically generating PDDL
 domains for concurrent programs from a more natural representation.
 We discuss why modern planners proved inadequate for reasoning about functional programming, and also discuss the implications for concurrency verification.
@@ -64,10 +63,17 @@ When applied to functional programming idioms such as the SKI combinator calculu
 
 This approach to formal concurrency verification, whether performed with planners or more conventional model checkers, may be applicable in the growing world of multiprocessor concurrency. Architectures such as ARM (common in cell phones) with weakly-consistent memory models are becoming more popular, and provide opportunities for new, difficult to reason about concurrency routines. Encoding multiprocessor memory semantics as abstract machines would be a logical progression of the work we presented here.
 
-Our codebase, comprising the functional and imperative domains and problems, and the threads compiler, can be viewed at \url{https://github.com/cangiuli/planning}.
+\vspace{1em}
+We worked with the MIPS (both MIPS-BDD and MIPS-XXL) and the SGPlan planners, eventually settling on SGPlan for most of the work. Our codebase, comprising the functional and imperative domains and problems, and the threads compiler, can be viewed at \url{https://github.com/cangiuli/planning}.
 
 \bibliography{citations}{}
 \bibliographystyle{alpha}
+
+\newpage
+
+\appendix
+\section{Code examples}
+\input{appendix}
 
 \end{document}
 
