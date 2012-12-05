@@ -24,5 +24,9 @@ struct
   type global = var * int
   type function = string * stm
 
+  datatype should_finish = Finish | NotFinish
+  datatype should_plan = Plan | NoPlan
+  type goals = should_finish * should_plan * ((var * int) list)
+
   type program = global list * function list
 end

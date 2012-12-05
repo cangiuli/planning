@@ -1,12 +1,18 @@
 structure Output =
 struct
+  structure C = C1Named
   structure S = Target
 
   val indent = "    "
   val indent2 = indent ^ indent
   val goal_indent = "            "
 
-  fun initial_boilerplate name =
+  fun shouldPlan C.Plan = "; A plan SHOULD be found\n"
+    | shouldPlan C.NoPlan = "; A plan should NOT be found\n"
+
+  fun initial_boilerplate name plan =
+      "; THIS IS GENERATED CODE: DO NOT EDIT\n" ^
+      shouldPlan plan ^
       "(define (problem " ^ name ^ ")\n" ^
       "    (:domain threads)\n" ^
       "    (:objects\n" ^
@@ -20,14 +26,21 @@ struct
       "        (succ n0 n1) (succ n1 n2) (succ n2 n3)\n" ^
       "        (succ n3 n4) (succ n4 n5) (succ n5 n6)\n\n"
 
+  fun emitDoneGoal C.Finish = "            (done out)\n"
+    | emitDoneGoal C.NotFinish = ""
 
-  fun end_boilerplate other_goals =
+  fun emitLabel func n = func ^ Int.toString n
+  fun emitNumber n = "n" ^ Int.toString n
+
+  fun emitBinding (v, n) =
+      goal_indent ^ "(value " ^ v ^ " " ^ emitNumber n ^ ")\n"
+
+  fun end_boilerplate doneGoal bindings =
     "        (eval main0 out)\n" ^
     "    )\n" ^
     "    (:goal (and\n" ^
-    "            (done out)\n" ^
-    "            ; GOALS\n" ^
-    other_goals ^
+    emitDoneGoal doneGoal ^
+    String.concat (map emitBinding bindings) ^
     "        )\n" ^
     "    )\n" ^
     ")\n"
@@ -37,8 +50,6 @@ struct
       in indent2 ^ String.concatWith " " names ^ " - label\n\n" end
 
 
-  fun emitLabel func n = func ^ Int.toString n
-  fun emitNumber n = "n" ^ Int.toString n
 
   fun emitFunctionLabels (name, stmts) =
       let
@@ -87,14 +98,15 @@ struct
   fun emitFunctions functions =
       indent2 ^ "; .text\n" ^ String.concat (map emitFunction functions)
 
-  fun emitProgram name (globals, functions) =
-      initial_boilerplate name ^
+  fun emitProgram name (globals, functions)
+                  (shouldFinish, shouldPlan, bindings) =
+      initial_boilerplate name shouldPlan ^
       emitGlobalObjects globals ^
       emitLabels functions ^
       mid_boilerplate ^
       emitGlobals globals ^
       emitFunctions functions ^
-      end_boilerplate ""
+      end_boilerplate shouldFinish bindings
 
 
 end

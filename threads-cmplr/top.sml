@@ -6,15 +6,15 @@ struct
           val basename = hd (String.tokens (equals #".") filename)
       in basename end
 
-  fun compileStr inputFile =
+  fun compileStr inputFile goals outputFile =
       let val ast = Exec.readFile inputFile
           val labeled = Compile.compile ast
           val unlabeled = RemoveLabels.convert labeled
-          val output = Output.emitProgram (getBasename inputFile) unlabeled
+          val output = Output.emitProgram (getBasename outputFile) unlabeled goals
       in output end
 
-  fun compile inputFile outputFile =
-      let val output = compileStr inputFile
+  fun compile inputFile goals outputFile =
+      let val output = compileStr inputFile goals outputFile
           val file = TextIO.openOut outputFile
           val () = TextIO.output (file, output)
           val () = TextIO.closeOut file
