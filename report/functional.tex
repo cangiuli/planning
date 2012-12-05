@@ -18,9 +18,9 @@ plus(s(M),N,s(P)) :- plus(M,N,P).
 \end{verbatim}
 The first line says that $\texttt{z}+N=N$, for any $N$, and the second line says
 that $\texttt{s(}M\texttt{)}+N=\texttt{s(}P\texttt{)}$ so long as $M+N=P$. This
-is remarkably similar to a planning problem, except for the crucial difficulty
-that Prolog natively supports producing and consuming nested data like
-\texttt{s(s(z))} and instantiates rules via unification of this nested data.
+is remarkably similar to a planning problem, except that Prolog natively
+supports producing and consuming nested data like \texttt{s(s(z))} and
+instantiates rules via unification of this nested data.
 
 To represent nested data types in PDDL, we were forced to represent them
 explicitly via pointer graphs of constructors. \texttt{z} is represented by any

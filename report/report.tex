@@ -57,14 +57,11 @@ We discuss why modern planners proved inadequate for reasoning about functional 
 
 \section{Conclusion and Future Work}
 
-In this project, we explored the correspondence between planning and program verification. Planning domains can be used to express an abstract machine's operational semantics, on top of which programs to be verified can be encoded as planning problems. Goal statements represent a program's specification, and output plans are execution traces.
-
-When applied to functional programming idioms such as the SKI combinator calculus, we found planners were unable to verify any but the simplest programs due to memory requirements during evaluation. We found imperative abstract machines more workable, and verified several synchronisation algorithms.
+In this project, we explored the correspondence between planning and program verification. Planning domains can be used to express an abstract machine's operational semantics, on top of which programs to be verified can be encoded as planning problems. Then goal statements correspond to a program's specification, and output plans to execution traces. We found that planners were unable to execute (and hence, verify) even the simplest possible lambda or combinator terms, due to the highly dynamic, runtime-data-driven nature of the planning problem. We found imperative abstract machines more workable, and verified several synchronisation algorithms.
 
 This approach to formal concurrency verification, whether performed with planners or more conventional model checkers, may be applicable in the growing world of multiprocessor concurrency. Architectures such as ARM (common in cell phones) with weakly-consistent memory models are becoming more popular, and provide opportunities for new, difficult to reason about concurrency routines. Encoding multiprocessor memory semantics as abstract machines would be a logical progression of the work we presented here.
 
-\vspace{1em}
-We worked with the MIPS (both MIPS-BDD and MIPS-XXL) and the SGPlan planners, eventually settling on SGPlan for most of the work. Our codebase, comprising the functional and imperative domains and problems, and the threads compiler, can be viewed at \url{https://github.com/cangiuli/planning}.
+In this project, we used the MIPS (both MIPS-BDD and MIPS-XXL) and especially SGPlan planners. Our codebase, comprising the functional and imperative domains and problems, and the threads compiler, are available at \url{https://github.com/cangiuli/planning}.
 
 \bibliography{citations}{}
 \bibliographystyle{alpha}
