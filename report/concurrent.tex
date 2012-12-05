@@ -13,7 +13,7 @@ its actions represent the language's evaluation rules. For example, \texttt{valu
 %
 Finally, \texttt{eval ?instruction ?out} represents the program counter; its first argument is the label associated with the next instruction to be executed, and its second argument is the ``destination'' label, a special label used to identify which threads have terminated. There are as many \texttt{eval} tokens as currently-running threads.
 
-The following problem in the threads domain demonstrates a simple data race between two threads---two interleaving threads attempting to increment a shared variable can nondeterministically produce different results. The initial state of the planning problem expresses the following program:
+The first set of problems in the threads domain demonstrates a simple data race between two threads---two interleaving threads attempting to increment a shared variable can nondeterministically produce different results. The initial state of the planning problem expresses the following program:
 %
 	\begin{center} \small
 	\begin{tabular}{ll}
@@ -39,7 +39,7 @@ An algorithm that provides mutual exclusion does not allow multiple threads to b
 %
 \begin{center} \small
 \begin{tabular}{ll}
-\multicolumn{2}{c}{\texttt{num\_in\_section = 0;~~~~~}} \\
+\multicolumn{2}{c}{\texttt{num\_in\_section = 0;~~~~~~}} \\
 \multicolumn{2}{c}{\texttt{fork(thread1, thread2);}} \\
 & \\
 \texttt{thread1() \{} & \texttt{thread2() \{} \\
