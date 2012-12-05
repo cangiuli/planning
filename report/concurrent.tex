@@ -65,9 +65,14 @@ We next explored several different algorithms for {\em synchronisation} -- the p
 	\end{tabular}
 	\end{center}
 	We then set the goal statement to be \texttt{num\_in\_section == 2}. When a complete planner cannot plan for this fact, it guarantees that no execution interleaving exists in which both threads are in the section at once -- in other words, that mutual exclusion is satisfied.
-	\item {\bf Bounded Waiting.} An algorithm that provides  
+	\item {\bf Bounded Waiting.} An algorithm that provides
 	\item {\bf Progress.} An algorithm that provides
 \end{enumerate}
 
 \subsection{Compiler}
 Sully - concurrent compiler
+
+
+To help test our shared memory concurrency domain and to generate its
+generality, we built a compiler for a very simple imperative language
+with standard structured programming constructs.
