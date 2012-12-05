@@ -68,7 +68,7 @@ We next explored several different algorithms for {\em synchronisation} -- the p
 
 	We added the infinite loop in each thread's body to test the unlock sequence as well as the lock sequence, to account for the possibility that a broken algorithm might require multiple iterations before failing. One particular strength of planners shines here; namely, their ability to deal with cyclic state spaces. In the blocks world, no planner worth its salt would get stuck evaluating the infinite plan ``pick up block A, stack A on B, pick up block A, \dots''; likewise, here the planners can easily cope with the infinite loops in each thread.
 	\item {\bf Bounded Waiting.} An algorithm that provides bounded waiting does not allow any thread to be ``starved'' while waiting for the lock; that is, once a thread has expressed interest in acquiring the lock, there exists some finite number $N$ such that other threads can perform no more than $N$ subsequent operations on the lock before the first thread acquires it.
-		To ensure bounded waiting, we write programs of the following form, in which \texttt{thread1} indicates when it has ``expressed interest in the lock``, and \texttt{thread2} counts the number of times it acquires the lock in the meantime.
+		To ensure bounded waiting, we write programs of the following form, in which \texttt{thread1} indicates when it has ``expressed interest in the lock``, and \texttt{thread2} counts the number of times it acquires the lock since then:
 	\begin{center}
 	\begin{tabular}{ll}
 	\multicolumn{2}{c}{\texttt{thread1\_waiting = false;}} \\
@@ -112,7 +112,7 @@ Pseudocode sketches of each of these algorithms can be found on the wikipedia ar
 	\item {\bf Lamport's bakery algorithm (atomic-add).} Demonstrated in the test cases that start with \texttt{prob9}. We verify mutual exclusion and bounded waiting.
 \end{itemize}
 
-We also include a broken algorithm which doesn't even provide mutual exclusion, \texttt{prob51-broken-lock.pddl}, for which the planner can plan for \texttt{num\_in\_section == 2}.
+We also include a broken algorithm, \texttt{prob51-broken-lock.pddl}, for which we can even refute mutual exclusion (i.e., the planner can plan for \texttt{num\_in\_section == 2}).
 
 \subsection{Compiler}
 
