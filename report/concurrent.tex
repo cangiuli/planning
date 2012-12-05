@@ -17,6 +17,7 @@ The following problem in the threads domain demonstrates a simple data race betw
 %
 	\begin{center} \small
 	\begin{tabular}{ll}
+	\multicolumn{2}{c}{\texttt{x = 0;~~~~~~~~~~~~~~~~~~}} \\
 	\multicolumn{2}{c}{\texttt{fork(thread1, thread2);}} \\
 	& \\
 	\texttt{thread1() \{} & \texttt{thread2() \{} \\
