@@ -5,7 +5,7 @@ Its predicates are used to indicate values of data and to indicate a program's i
 its actions represent the language's evaluation rules. For example, \texttt{value ?name ?value} indicates the value of a variable with a given name. Each instruction is encoded as both a predicate (its representation in the instruction stream) and an action (which specifies its semantics).
 %
 \begin{itemize}
-	\item \texttt{set ?me ?next ?name ?value} - Assigns a value to a variable. \texttt{me} is the label for this instruction (all instructions share this pattern), \texttt{next} is the label of the next instruction to evaluate after this one (most instructions share this pattern).
+	\item \texttt{set ?me ?next ?name ?value} - Assigns a value to a variable. \texttt{me} is the label for this instruction (all instructions share this pattern), \texttt{next} is the label of the next instruction to evaluate after this one. The increment, decrement, load, atomic-exchange, and atomic-add instructions are similar.
 	\item \texttt{branch ?me ?name ?iftrue ?iffalse} - Flow control. Instead of \texttt{next}, there are two next instructions, selected between depending whether \texttt{name} is \texttt{n0}.
 	\item \texttt{exit ?me} - Terminates execution of the current thread (or program).
 	\item \texttt{fork ?me ?next ?child1 ?child2} - Runs \texttt{child1} and \texttt{child2} to completion (both must \texttt{exit}), and then advances to \texttt{next}.
