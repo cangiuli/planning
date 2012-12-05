@@ -41,7 +41,7 @@
         (incr thread011 thread012 num_in_section)
         (decr thread012 thread013 num_in_section)
         (set thread013 thread00 flag0 n0)
-        (exit thread014)
+        (branch thread014 tmp0 thread00 thread01)
 
         ; thread1
         (set thread10 thread11 flag1 n1)
@@ -56,7 +56,7 @@
         (incr thread19 thread110 num_in_section)
         (decr thread110 thread111 num_in_section)
         (set thread111 thread10 flag1 n0)
-        (exit thread112)
+        (branch thread112 tmp1 thread10 thread11)
 
         ; main
         (fork main0 main1 thread00 thread10)

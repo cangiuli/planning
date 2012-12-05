@@ -33,7 +33,7 @@ Our first test case for the threads domain was to demonstrate a simple data race
 	\multicolumn{2}{c}{\texttt{fork(thread1, thread2);}} \\
 	& \\
 	\texttt{thread1() \{} & \texttt{thread2() \{} \\
-	\texttt{~~~~temp0 = x;~~~~} & \texttt{~~~~temp1 = x;} \\
+	\texttt{~~~~temp0 = x;\qquad} & \texttt{~~~~temp1 = x;} \\
 	\texttt{~~~~temp0++;} & \texttt{~~~~temp1++;} \\
 	\texttt{~~~~x = temp0;} & \texttt{~~~~x = temp1;} \\
 	\texttt{\}} & \texttt{\}} \\
@@ -47,9 +47,26 @@ In this example, possible values for \texttt{x} at the end are 1 and 2. The prob
 We next explored several different algorithms for {\em synchronisation} -- the problem of protecting designated ``critical sections'' of execution from unsafe concurrent access. Mutual exclusion algorithms are characterised by three properties: {\em mutual exclusion}, {\em bounded waiting}, and {\em progress}~\cite{de0u}. We next discuss how planners helped us verify these properties.
 
 \begin{enumerate}
-\item {\bf Mutual Exclusion.}
-\item {\bf Bounded Waiting.}
-\item {\bf Progress.}
+	\item {\bf Mutual Exclusion.} An algorithm that provides mutual exclusion does not allow multiple threads to be executing in the critical section simultaneously.
+	To ensure that an algorithm provides mutual exclusion, we write programs of the following form, in which both threads modify a \texttt{num\_in\_section} counter to indicate when they're in the critical section:
+	\begin{center}
+	\begin{tabular}{ll}
+	\multicolumn{2}{c}{\texttt{num\_in\_section = 0;}} \\
+	\multicolumn{2}{c}{\texttt{fork(thread1, thread2);}} \\
+	& \\
+	\texttt{thread1() \{} & \texttt{thread2() \{} \\
+	\texttt{~~~~while (true) \{} & \texttt{~~~~while (true) \{} \\
+	\texttt{~~~~~~~~lock\_sequence();} & \texttt{~~~~~~~~lock\_sequence();} \\
+	\texttt{~~~~~~~~num\_in\_section++;} & \texttt{~~~~~~~~num\_in\_section++;} \\
+	\texttt{~~~~~~~~num\_in\_section--;} & \texttt{~~~~~~~~num\_in\_section--;} \\
+	\texttt{~~~~~~~~unlock\_sequence();\qquad} & \texttt{~~~~~~~~unlock\_sequence();} \\
+	\texttt{~~~~\}} & \texttt{~~~~\}} \\
+	\texttt{\}} & \texttt{\}} \\
+	\end{tabular}
+	\end{center}
+	We then set the goal statement to be \texttt{num\_in\_section == 2}. When a complete planner cannot plan for this fact, it guarantees that no execution interleaving exists in which both threads are in the section at once -- in other words, that mutual exclusion is satisfied.
+	\item {\bf Bounded Waiting.} An algorithm that provides  
+	\item {\bf Progress.} An algorithm that provides
 \end{enumerate}
 
 \subsection{Compiler}
