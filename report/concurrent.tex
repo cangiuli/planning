@@ -98,5 +98,19 @@ We next explored several different algorithms for {\em synchronisation} -- the p
 		\end{itemize}
 \end{enumerate}
 
+\subsubsection{Results}
+
+Using test cases following the above schemes, we verified or generated counterexamples for mutual exclusion and bounded waiting for four well-known synchronisation algorithms.\footnote{
+Pseudocode sketches of each of these algorithms can be found on the wikipedia articles of the same name.}
+
+\begin{itemize}
+	\item {\bf Dekker's algorithm.} Demonstrated in the test cases that start with \texttt{prob4}. We verify mutual exclusion and refute bounded waiting.
+	\item {\bf Peterson's algorithm.} Demonstrated in the test cases that start with \texttt{prob7}. We verify mutual exclusion and bounded waiting.
+	\item {\bf Spinlock (atomic-exchange).} Demonstrated in the test cases that start with \texttt{prob8}. We verify mutual exclusion and refute bounded waiting.
+	\item {\bf Lamport's bakery algorithm (atomic-add).} Demonstrated in the test cases that start with \texttt{prob9}. We verify mutual exclusion and bounded waiting.
+\end{itemize}
+
+We also include a broken algorithm which doesn't even provide mutual exclusion, \texttt{prob51-broken-lock.pddl}, for which the planner can plan for \texttt{num\_in\_section == 2}.
+
 \subsection{Compiler}
 Sully - concurrent compiler
